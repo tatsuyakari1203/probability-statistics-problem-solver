@@ -1,0 +1,8 @@
+{
+  "name": "Probability & Statistics Problem Solver",
+  "description": "An intelligent web application to help you solve probability and statistics problems. Input the problem via text or image (upload or paste), and receive a detailed solution along with JavaScript-executed calculations for accuracy.",
+  "requestFramePermissions": [
+    "clipboard-read"
+  ],
+  "prompt": ""
+}
