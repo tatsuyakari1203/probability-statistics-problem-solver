@@ -161,3 +161,4 @@ jest_coverage/
 .cache/
 .temp/
 .tmp/
+plan.md
