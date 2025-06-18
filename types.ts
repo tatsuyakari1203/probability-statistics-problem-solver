@@ -23,6 +23,11 @@ export interface SequentialStepOutput {
 // Represents the structure of the solution
 export interface GeminiSolutionResponse {
   problemUnderstanding?: ProblemUnderstanding;
+  detectedSubject?: string; // Auto-detected subject type
+  subjectConfig?: {
+    name: string;
+    description: string;
+  };
 
   // Fields for Normal Mode
   solutionSteps?: SolutionStep[]; 

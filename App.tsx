@@ -6,6 +6,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { solveProblemWithGemini } from './services/geminiService';
 import type { GeminiSolutionResponse, AdvancedModeProgress } from './types';
+import type { SubjectType } from './config/subjectConfig';
 import { AcademicCapIcon } from './components/icons/AcademicCapIcon';
 
 const App: React.FC = () => {
@@ -18,7 +19,7 @@ const App: React.FC = () => {
     setAdvancedModeProgress(progress);
   }, []);
 
-  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, isAdvancedMode: boolean) => {
+  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType?: SubjectType) => {
     // Enhanced input validation
     if (!problemText || typeof problemText !== 'string' || problemText.trim() === '') {
       if (!imageBase64) {
@@ -41,7 +42,8 @@ const App: React.FC = () => {
         problemText, 
         imageBase64, 
         isAdvancedMode, 
-        handleProgressUpdate
+        handleProgressUpdate,
+        subjectType
       );
       
       // Enhanced result validation
@@ -83,16 +85,36 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-base-100">
       <div className="w-full max-w-none px-0 py-4 sm:py-6 lg:py-8">
-        {/* Simplified Hero Section */}
-        <div className="hero min-h-[30vh] rounded-2xl mb-8 mx-auto max-w-6xl animate-fade-in">
+        {/* Enhanced Hero Section */}
+        <div className="hero min-h-[35vh] rounded-2xl mb-8 mx-auto max-w-6xl animate-fade-in bg-gradient-to-br from-primary/90 via-secondary/80 to-accent/70 backdrop-blur-sm">
           <div className="hero-content text-center">
-            <div className="max-w-3xl">
-              <AcademicCapIcon className="h-12 w-12 text-white mb-4 mx-auto" />
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
-                Probability & Statistics Solver
+            <div className="max-w-4xl">
+              <AcademicCapIcon className="h-16 w-16 text-white mb-6 mx-auto animate-float" />
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                AI Multi-Subject Problem Solver
               </h1>
-              <p className="text-sm sm:text-base text-blue-100 opacity-80">
-                Giải bài toán xác suất thống kê với AI
+              <p className="text-lg sm:text-xl text-blue-50 opacity-90 mb-6 font-medium">
+                Giải bài toán Toán học, Vật lý, Hóa học với AI thông minh
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 mb-6">
+                <div className="badge badge-lg bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  📊 Xác suất & Thống kê
+                </div>
+                <div className="badge badge-lg bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  🧮 Đại số tuyến tính
+                </div>
+                <div className="badge badge-lg bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  📐 Giải tích
+                </div>
+                <div className="badge badge-lg bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  ⚛️ Vật lý
+                </div>
+                <div className="badge badge-lg bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                  🧪 Hóa học
+                </div>
+              </div>
+              <p className="text-sm sm:text-base text-blue-100/80">
+                Hỗ trợ nhập văn bản, tải ảnh và giải thích chi tiết từng bước
               </p>
             </div>
           </div>
@@ -134,11 +156,20 @@ const App: React.FC = () => {
               <div className="w-8 h-px bg-gradient-to-l from-transparent to-primary/50"></div>
             </div>
             <p className="text-sm sm:text-base font-medium bg-gradient-to-r from-base-content/60 to-primary/80 bg-clip-text text-transparent">
-              &copy; {new Date().getFullYear()} AI Probability & Statistics Solver
+              &copy; {new Date().getFullYear()} AI Multi-Subject Problem Solver
             </p>
-            <p className="text-xs sm:text-sm text-base-content/40">
-              Powered by Google Gemini AI • Made with ❤️ for Education
-            </p>
+            <div className="flex justify-center items-center gap-4 text-xs sm:text-sm text-base-content/40 flex-wrap">
+              <span>🤖 Powered by Google Gemini AI</span>
+              <span>•</span>
+              <span>📚 Hỗ trợ đa môn học</span>
+              <span>•</span>
+              <span>❤️ Made for Education</span>
+            </div>
+            <div className="flex justify-center gap-2 mt-4">
+              <div className="badge badge-ghost badge-sm">📊 Toán học</div>
+              <div className="badge badge-ghost badge-sm">⚛️ Vật lý</div>
+              <div className="badge badge-ghost badge-sm">🧪 Hóa học</div>
+            </div>
           </div>
         </footer>
       </div>

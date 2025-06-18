@@ -40,7 +40,17 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
     <ReactMarkdown
       // Các plugin được sử dụng để xử lý nội dung
       remarkPlugins={[remarkMath]}
-      rehypePlugins={[rehypeKatex]}
+      rehypePlugins={[[rehypeKatex, {
+        strict: false,
+        trust: true,
+        macros: {
+          "\\RR": "\\mathbb{R}",
+          "\\NN": "\\mathbb{N}",
+          "\\ZZ": "\\mathbb{Z}",
+          "\\QQ": "\\mathbb{Q}",
+          "\\CC": "\\mathbb{C}"
+        }
+      }]]}
       // Cung cấp các class của Tailwind để tạo kiểu cho nội dung Markdown
       // Điều này giúp bạn kiểm soát giao diện một cách nhất quán
       components={{

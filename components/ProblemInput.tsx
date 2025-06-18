@@ -2,9 +2,10 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES } from '../constants';
 import { PhotoIcon, DocumentTextIcon, SparklesIcon, ClipboardIcon, AcademicCapIcon } from './icons/InputIcons';
+import { SubjectType, SUBJECTS } from '../config/subjectConfig';
 
 interface ProblemInputProps {
-  onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean) => void;
+  onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType?: SubjectType) => void;
   isLoading: boolean;
 }
 
@@ -15,6 +16,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [inputError, setInputError] = useState<string | null>(null);
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
+  const [selectedSubject, setSelectedSubject] = useState<SubjectType>('probability_statistics');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageDropZoneRef = useRef<HTMLDivElement>(null);
 
@@ -140,8 +142,8 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     }
     
     setInputError(null);
-    onSubmit(trimmedText, imageBase64, isAdvancedMode);
-  }, [problemText, imageBase64, onSubmit, isAdvancedMode]);
+    onSubmit(trimmedText, imageBase64, isAdvancedMode, selectedSubject);
+  }, [problemText, imageBase64, onSubmit, isAdvancedMode, selectedSubject]);
 
   const handleDirectPaste = useCallback(async (event: ClipboardEvent) => {
     if (isLoading) return;
@@ -269,11 +271,13 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           {/* Quick Templates */}
           <div className="mt-3">
             <div className="flex flex-wrap gap-2">
-              <div className="dropdown dropdown-top">
+              <div className="dropdown dropdown-bottom">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-xs" disabled={isLoading}>
                   📝 Mẫu có sẵn
                 </div>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80 max-h-60 overflow-y-auto">
+                  {/* Xác suất & Thống kê */}
+                  <li className="menu-title"><span>📊 Xác suất & Thống kê</span></li>
                   <li>
                     <a onClick={() => setProblemText('Tính xác suất để trong 10 lần tung đồng xu, có ít nhất 7 lần xuất hiện mặt ngửa.')}>
                       🪙 Xác suất tung đồng xu
@@ -297,6 +301,55 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                   <li>
                     <a onClick={() => setProblemText('Từ dữ liệu mẫu: [12, 15, 18, 20, 22, 25, 28, 30]. Tính trung bình, phương sai, độ lệch chuẩn và khoảng tin cậy 95%.')}>
                       📈 Thống kê mô tả
+                    </a>
+                  </li>
+                  
+                  {/* Vật lý */}
+                  <li className="menu-title"><span>⚛️ Vật lý</span></li>
+                  <li>
+                    <a onClick={() => setProblemText('Một vật có khối lượng 2kg chuyển động với vận tốc 10m/s. Tính động năng của vật.')}>
+                      🏃 Động năng
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Một điện tích q = 2μC đặt trong điện trường đều E = 1000V/m. Tính lực tác dụng lên điện tích.')}>
+                      ⚡ Điện trường
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Một lò xo có độ cứng k = 100N/m bị nén 5cm. Tính thế năng đàn hồi của lò xo.')}>
+                      🌀 Thế năng đàn hồi
+                    </a>
+                  </li>
+                  
+                  {/* Hóa học */}
+                  <li className="menu-title"><span>🧪 Hóa học</span></li>
+                  <li>
+                    <a onClick={() => setProblemText('Cân bằng phương trình hóa học: C₂H₆ + O₂ → CO₂ + H₂O')}>
+                      ⚖️ Cân bằng phương trình
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Tính pH của dung dịch HCl 0.01M.')}>
+                      🧪 Tính pH
+                    </a>
+                  </li>
+                  
+                  {/* Toán học */}
+                  <li className="menu-title"><span>📐 Toán học</span></li>
+                  <li>
+                    <a onClick={() => setProblemText('Tính đạo hàm của hàm số f(x) = x³ + 2x² - 5x + 1')}>
+                      📈 Đạo hàm
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Giải hệ phương trình: 2x + 3y = 7; x - y = 1')}>
+                      🔢 Hệ phương trình
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Tính tích phân: ∫(x² + 3x + 2)dx từ 0 đến 2')}>
+                      ∫ Tích phân
                     </a>
                   </li>
                 </ul>
@@ -398,6 +451,30 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
             <span>{inputError}</span>
           </div>
         )}
+
+        {/* Subject Selection */}
+        <div className="form-control mt-6">
+          <label className="label">
+            <span className="label-text text-lg font-medium">Chọn môn học</span>
+          </label>
+          <select 
+            className="select select-bordered w-full" 
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value as SubjectType)}
+            disabled={isLoading}
+          >
+            {Object.entries(SUBJECTS).map(([key, subject]) => (
+              <option key={key} value={key}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          <div className="label">
+            <span className="label-text-alt opacity-70">
+              {SUBJECTS[selectedSubject].description}
+            </span>
+          </div>
+        </div>
 
         {/* Advanced Mode Toggle */}
         <div className="form-control mt-6">
