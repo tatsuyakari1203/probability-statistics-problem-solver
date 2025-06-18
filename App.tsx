@@ -81,37 +81,67 @@ const App: React.FC = () => {
   }, [handleProgressUpdate]);
 
   return (
-    <div className="container mx-auto p-6 animate-fade-in">
-      <header className="mb-12 text-center">
-        <div className="flex items-center justify-center mb-6 animate-slide-in">
-          <AcademicCapIcon className="h-14 w-14 text-sky-400 mr-4 animate-pulse-subtle" />
-          <h1 className="text-5xl font-light tracking-wide text-sky-400">
-            Probability & Statistics Solver
-          </h1>
-        </div>
-        <p className="text-slate-300 text-xl font-light max-w-2xl mx-auto leading-relaxed">
-          Enter your problem or upload an image to get a detailed solution
-        </p>
-      </header>
-
-      <ProblemInput onSubmit={handleSubmitProblem} isLoading={isLoading} />
-
-      {isLoading && <LoadingSpinner advancedProgress={advancedModeProgress} />}
-      {error && !isLoading && <ErrorMessage message={error} />}
-      {solution && !error && !isLoading && (
-        <React.Suspense fallback={
-          <div className="flex justify-center items-center p-8">
-            <div className="text-slate-400">Đang tải kết quả...</div>
+    <div className="min-h-screen bg-base-100">
+      <div className="w-full max-w-none px-0 py-4 sm:py-6 lg:py-8">
+        {/* Simplified Hero Section */}
+        <div className="hero min-h-[30vh] rounded-2xl mb-8 mx-auto max-w-6xl animate-fade-in">
+          <div className="hero-content text-center">
+            <div className="max-w-3xl">
+              <AcademicCapIcon className="h-12 w-12 text-white mb-4 mx-auto" />
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
+                Probability & Statistics Solver
+              </h1>
+              <p className="text-sm sm:text-base text-blue-100 opacity-80">
+                Giải bài toán xác suất thống kê với AI
+              </p>
+            </div>
           </div>
-        }>
-          <SolutionDisplay solution={solution} />
-        </React.Suspense>
-      )}
+        </div>
 
+        <div className="problem-input-container">
+          <ProblemInput onSubmit={handleSubmitProblem} isLoading={isLoading} />
+        </div>
 
-      <footer className="mt-20 text-center text-slate-400 border-t border-slate-800 pt-8">
-        <p className="text-sm font-light">&copy; {new Date().getFullYear()} AI Solver. Powered by Gemini.</p>
-      </footer>
+        {isLoading && (
+          <div className="loading-container animate-slide-in">
+            <LoadingSpinner advancedProgress={advancedModeProgress} />
+          </div>
+        )}
+        {error && !isLoading && (
+          <div className="error-container animate-slide-in">
+            <ErrorMessage message={error} />
+          </div>
+        )}
+        {solution && !error && !isLoading && (
+          <div className="solution-display-container animate-fade-in">
+            <React.Suspense fallback={
+              <div className="flex justify-center items-center p-8 sm:p-12">
+                <div className="loading loading-spinner loading-lg text-primary animate-glow"></div>
+                <span className="ml-4 text-base sm:text-lg text-base-content/70 loading-shimmer">Đang tải kết quả...</span>
+              </div>
+            }>
+              <SolutionDisplay solution={solution} />
+            </React.Suspense>
+          </div>
+        )}
+
+        <footer className="mt-16 sm:mt-20 lg:mt-24 text-center pt-8 sm:pt-12 mx-2 sm:mx-4 animate-fade-in">
+          <div className="bg-gradient-to-r from-transparent via-base-300/50 to-transparent h-px mb-8"></div>
+          <div className="text-base-content/60 space-y-4">
+            <div className="flex justify-center items-center space-x-4">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent to-primary/50"></div>
+              <AcademicCapIcon className="h-6 w-6 text-primary/70" />
+              <div className="w-8 h-px bg-gradient-to-l from-transparent to-primary/50"></div>
+            </div>
+            <p className="text-sm sm:text-base font-medium bg-gradient-to-r from-base-content/60 to-primary/80 bg-clip-text text-transparent">
+              &copy; {new Date().getFullYear()} AI Probability & Statistics Solver
+            </p>
+            <p className="text-xs sm:text-sm text-base-content/40">
+              Powered by Google Gemini AI • Made with ❤️ for Education
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };

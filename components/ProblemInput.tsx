@@ -86,8 +86,24 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   }, []);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setProblemText(event.target.value);
-    if (inputError && (event.target.value.trim() || imageBase64)) setInputError(null);
+    const newText = event.target.value;
+    setProblemText(newText);
+    
+    // Clear error when user starts typing
+    if (inputError && (newText.trim() || imageBase64)) setInputError(null);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.ctrlKey && event.key === 'Enter') {
+      event.preventDefault();
+      if (!isLoading && (problemText.trim() || imageBase64)) {
+        const form = event.currentTarget.closest('form');
+        if (form) {
+          const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+          form.dispatchEvent(submitEvent);
+        }
+      }
+    }
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,138 +222,231 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
 
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 p-6 bg-slate-900/30 border-l-4 border-sky-400 animate-fade-in">
-      <div>
-        <label htmlFor="problemText" className="block text-lg font-medium text-sky-300 mb-3">
-          <DocumentTextIcon className="inline h-6 w-6 mr-2 align-bottom" />
-          Problem Description
-        </label>
-        <textarea
-          id="problemText"
-          value={problemText}
-          onChange={handleTextChange}
-          rows={5}
-          className="w-full p-4 bg-slate-800/50 border-l-3 border-slate-600 focus:border-l-3 focus:border-sky-400 text-slate-100 placeholder-slate-400 transition-all duration-200 resize-none"
-          placeholder="Example: Calculate the probability of rolling a 5 on a six-sided die."
-          disabled={isLoading}
-        />
-      </div>
+    <form onSubmit={handleSubmit}>
+      <div className="card bg-base-200 shadow-xl mb-8">
+        <div className="card-body">
+          <h2 className="card-title text-2xl mb-6">
+            <DocumentTextIcon className="h-8 w-8 text-primary" />
+            Nhập bài toán của bạn
+          </h2>
+        
+        {/* Problem Text Input */}
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text text-lg font-medium">Mô tả bài toán</span>
+            <span className="label-text-alt text-sm opacity-70">
+              {problemText.length}/10,000 ký tự
+            </span>
+          </label>
+          <div className="relative w-full">
+            <textarea
+               value={problemText}
+               onChange={handleTextChange}
+               onKeyDown={handleKeyDown}
+               placeholder="Ví dụ: Tính xác suất để trong 10 lần tung đồng xu, có ít nhất 7 lần xuất hiện mặt ngửa...&#10;&#10;Hoặc mô tả chi tiết bài toán xác suất và thống kê của bạn..."
+               className={`textarea textarea-bordered textarea-lg min-h-[8rem] max-h-[20rem] resize-y transition-all duration-200 focus:textarea-primary w-full text-left ${
+                 problemText.length > 9000 ? 'textarea-warning' : ''
+               } ${
+                 problemText.length > 9500 ? 'textarea-error' : ''
+               }`}
+               disabled={isLoading}
+               style={{
+                 height: Math.max(128, Math.min(320, problemText.split('\n').length * 24 + 64))
+               }}
+             />
+            {problemText.trim() && (
+              <button
+                type="button"
+                onClick={() => setProblemText('')}
+                className="btn btn-ghost btn-xs absolute top-2 right-2 opacity-50 hover:opacity-100"
+                disabled={isLoading}
+                title="Xóa nội dung"
+              >
+                ✕
+              </button>
+            )}
+          
+          {/* Quick Templates */}
+          <div className="mt-3">
+            <div className="flex flex-wrap gap-2">
+              <div className="dropdown dropdown-top">
+                <div tabIndex={0} role="button" className="btn btn-ghost btn-xs" disabled={isLoading}>
+                  📝 Mẫu có sẵn
+                </div>
+                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80 max-h-60 overflow-y-auto">
+                  <li>
+                    <a onClick={() => setProblemText('Tính xác suất để trong 10 lần tung đồng xu, có ít nhất 7 lần xuất hiện mặt ngửa.')}>
+                      🪙 Xác suất tung đồng xu
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Một hộp có 5 bi đỏ và 3 bi xanh. Lấy ngẫu nhiên 3 bi không hoàn lại. Tính xác suất để có đúng 2 bi đỏ.')}>
+                      🔴 Bài toán bi màu
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Điểm thi của một lớp tuân theo phân phối chuẩn với trung bình 75 và độ lệch chuẩn 10. Tính xác suất một học sinh có điểm từ 80 đến 90.')}>
+                      📊 Phân phối chuẩn
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Số khách hàng đến cửa hàng mỗi giờ tuân theo phân phối Poisson với λ = 5. Tính xác suất có đúng 3 khách hàng trong 1 giờ.')}>
+                      🏪 Phân phối Poisson
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Từ dữ liệu mẫu: [12, 15, 18, 20, 22, 25, 28, 30]. Tính trung bình, phương sai, độ lệch chuẩn và khoảng tin cậy 95%.')}>
+                      📈 Thống kê mô tả
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="tooltip" data-tip="Ctrl+Enter để gửi">
+                <kbd className="kbd kbd-xs">Ctrl</kbd>
+                <span className="mx-1">+</span>
+                <kbd className="kbd kbd-xs">Enter</kbd>
+              </div>
+            </div>
+          </div>
+          </div>
+          {problemText.length > 8000 && (
+            <div className="label">
+              <span className={`label-text-alt text-xs ${
+                problemText.length > 9500 ? 'text-error' : 
+                problemText.length > 9000 ? 'text-warning' : 'text-info'
+              }`}>
+                {problemText.length > 9500 ? '⚠️ Gần đạt giới hạn ký tự' :
+                 problemText.length > 9000 ? '💡 Nên rút gọn nội dung' :
+                 '📝 Nội dung khá dài'}
+              </span>
+            </div>
+          )}
+        </div>
 
-      <div 
-        ref={imageDropZoneRef} 
-        className="p-8 bg-slate-800/30 border-l-3 border-slate-600 hover:border-sky-400 hover:bg-slate-800/50 transition-all duration-200 text-center"
-        onDragOver={(e) => { e.preventDefault(); e.stopPropagation();}}
-        onDrop={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            processFile(e.dataTransfer.files[0]);
-          }
-        }}
-      >
-        <div 
-            className="cursor-pointer" 
+      {/* Image Upload Section */}
+        <div className="form-control mt-6">
+          <label className="label">
+            <span className="label-text text-lg font-medium">Hoặc tải lên hình ảnh</span>
+          </label>
+          <div 
+            ref={imageDropZoneRef} 
+            className="border-2 border-dashed border-base-300 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer"
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation();}}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                processFile(e.dataTransfer.files[0]);
+              }
+            }}
             onClick={() => !isLoading && fileInputRef.current?.click()}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') !isLoading && fileInputRef.current?.click()}}
-            aria-label={`Upload problem image (max ${MAX_IMAGE_SIZE_MB}MB) or drag and drop here`}
-        >
-            <PhotoIcon className="mx-auto h-12 w-12 text-sky-400/80 mb-3" />
-            <p className="text-base font-medium text-sky-300">
-              Drag & drop or click to select image
+          >
+            <PhotoIcon className="mx-auto h-16 w-16 text-primary/60 mb-4" />
+            <p className="text-lg font-medium mb-2">
+              Kéo thả hoặc nhấp để chọn hình ảnh
             </p>
-            <p className="text-sm text-slate-400 mt-2">
-                (Max {MAX_IMAGE_SIZE_MB}MB, JPG, PNG, WEBP format)
+            <p className="text-sm opacity-60">
+              (Tối đa {MAX_IMAGE_SIZE_MB}MB, định dạng JPG, PNG, WEBP)
             </p>
             <input
               type="file"
-              id="problemImage"
               ref={fileInputRef}
               accept={ALLOWED_IMAGE_TYPES.join(',')}
               onChange={handleImageChange}
               className="hidden"
               disabled={isLoading}
             />
-        </div>
-         
-        <div className="mt-6 text-sm text-slate-400">
-            <p className="flex items-center justify-center mb-3">
-                <ClipboardIcon className="inline h-5 w-5 mr-2 text-slate-400" />
-                Or use Ctrl+V to paste an image into this area.
-            </p>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <div className="divider">HOẶC</div>
             <button
               type="button"
               onClick={handlePasteButtonClick}
               disabled={isLoading}
-              className="inline-flex items-center px-4 py-2 border-l-3 border-sky-600 text-sm font-medium text-sky-200 bg-sky-700/50 hover:bg-sky-600/70 hover:border-sky-400 focus:outline-none focus:border-sky-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              aria-label="Paste image from clipboard"
+              className="btn btn-outline btn-sm"
             >
-              <ClipboardIcon className="h-5 w-5 mr-2" />
-              Paste from Clipboard
-            </button>
-        </div>
-
-        {previewUrl && (
-          <div className="mt-6 relative group inline-block">
-            <img src={previewUrl} alt="Image preview" className="max-h-52 border-l-3 border-slate-500" />
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); removeImage();}}
-              className="absolute top-2 right-2 bg-red-600/80 text-white p-1 w-7 h-7 flex items-center justify-center text-sm hover:bg-red-500 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
-              disabled={isLoading}
-              aria-label="Remove image"
-            >
-              &#x2715;
+              <ClipboardIcon className="h-4 w-4 mr-2" />
+              Dán từ clipboard (Ctrl+V)
             </button>
           </div>
+
+          {previewUrl && (
+            <div className="mt-6">
+              <div className="relative inline-block">
+                <img src={previewUrl} alt="Image preview" className="max-h-64 rounded-lg shadow-lg" />
+                <button
+                  type="button"
+                  onClick={removeImage}
+                  className="btn btn-circle btn-sm btn-error absolute -top-2 -right-2"
+                  disabled={isLoading}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Error Message */}
+        {inputError && (
+          <div className="alert alert-error mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{inputError}</span>
+          </div>
         )}
-      </div>
 
-      {inputError && <p role="alert" className="text-sm text-red-400 p-4 bg-red-900/20 border-l-3 border-red-500">{inputError}</p>}
-
-      <div className="mt-6 flex items-center justify-start space-x-4 p-4 bg-slate-800/30 border-l-3 border-slate-600">
-        <label htmlFor="advancedModeToggle" className="flex items-center cursor-pointer">
-          <div className="relative">
+        {/* Advanced Mode Toggle */}
+        <div className="form-control mt-6">
+          <label className="label cursor-pointer justify-start">
             <input 
               type="checkbox" 
-              id="advancedModeToggle" 
-              className="sr-only" 
+              className="toggle toggle-primary mr-4" 
               checked={isAdvancedMode}
               onChange={() => setIsAdvancedMode(!isAdvancedMode)}
               disabled={isLoading}
             />
-            <div className={`block w-12 h-6 transition-colors ${isAdvancedMode ? 'bg-sky-500' : 'bg-slate-600'}`}></div>
-            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 transition-transform ${isAdvancedMode ? 'translate-x-6' : ''}`}></div>
+            <span className="label-text text-lg font-medium mr-2">Chế độ nâng cao</span>
+            <AcademicCapIcon className="h-6 w-6 text-primary" title="Chế độ nâng cao chia nhỏ bài toán thành các bước để giải quyết vấn đề phức tạp."/>
+          </label>
+          <div className="label">
+            <span className="label-text-alt opacity-70">Chia nhỏ bài toán thành các bước chi tiết</span>
           </div>
-          <div className="ml-4 text-base font-medium text-slate-200">
-            Advanced Mode
-          </div>
-        </label>
-        <AcademicCapIcon className="h-6 w-6 text-sky-400" title="Advanced mode breaks down the problem into smaller steps to solve complex issues."/>
-      </div>
+        </div>
 
-
-      <button
-        type="submit"
-        disabled={isLoading || (!problemText.trim() && !imageBase64)}
-        className="w-full flex items-center justify-center px-8 py-4 border-l-4 border-sky-500 text-lg font-medium text-white bg-sky-600/80 hover:bg-sky-500 hover:border-sky-400 focus:outline-none focus:border-sky-300 disabled:bg-slate-600/50 disabled:text-slate-400 disabled:cursor-not-allowed disabled:border-slate-600 transition-all duration-200 group"
-      >
-        {isLoading ? (
-          <>
-            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Processing{isAdvancedMode ? " (Advanced)..." : "..."}
-          </>
-        ) : (
-          <>
-            <SparklesIcon className="h-5 w-5 mr-2 group-hover:animate-pulse" />
-            Solve Problem {isAdvancedMode && "(Advanced)"}
-          </>
-        )}
-      </button>
-    </form>
+        {/* Submit Button */}
+         <div className="card-actions justify-end mt-8">
+           <div className="w-full">
+             <button
+               type="submit"
+               disabled={isLoading || (!problemText.trim() && !imageBase64)}
+               className="btn btn-primary btn-lg w-full group"
+             >
+               {isLoading ? (
+                 <>
+                   <span className="loading loading-spinner loading-sm"></span>
+                   Đang xử lý{isAdvancedMode ? " (Nâng cao)..." : "..."}
+                 </>
+               ) : (
+                 <>
+                   <SparklesIcon className="h-6 w-6 mr-2 group-hover:animate-pulse" />
+                   Giải bài toán {isAdvancedMode && "(Nâng cao)"}
+                   <kbd className="kbd kbd-xs ml-2 opacity-60">Ctrl+Enter</kbd>
+                 </>
+               )}
+             </button>
+             {(!problemText.trim() && !imageBase64) && (
+               <div className="text-center mt-2">
+                 <span className="text-xs opacity-60">💡 Nhập mô tả bài toán hoặc tải lên hình ảnh để bắt đầu</span>
+               </div>
+             )}
+           </div>
+         </div>
+       </div>
+     </div>
+   </form>
   );
 };

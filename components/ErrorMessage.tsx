@@ -7,11 +7,18 @@ interface ErrorMessageProps {
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
   return (
-    <div className="my-8 p-6 flex items-start text-red-300 bg-red-900/20 border-l-4 border-red-500 animate-fade-in" role="alert">
-      <ExclamationTriangleIcon className="h-7 w-7 mr-4 flex-shrink-0 text-red-400" />
+    <div className="alert alert-error mb-8">
+      <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0" />
       <div>
-        <h3 className="font-medium text-red-200 text-lg mb-2">Error Occurred</h3>
-        <p className="text-base leading-relaxed">{message}</p>
+        <h3 className="font-bold text-lg mb-1">
+          Lỗi xử lý yêu cầu
+        </h3>
+        <div className="text-sm opacity-90">
+          {message}
+        </div>
+        <div className="text-xs opacity-70 mt-2">
+          Vui lòng thử lại hoặc kiểm tra dữ liệu đầu vào.
+        </div>
       </div>
     </div>
   );

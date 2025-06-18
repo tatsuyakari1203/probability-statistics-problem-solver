@@ -17,8 +17,9 @@
   
     <!-- highlight.js CSS (e.g., a default dark theme) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.3/24/outline/academic-cap.svg" rel="stylesheet">
+    
+    <!-- Import our custom CSS with DaisyUI -->
+    <link rel="stylesheet" href="./src/style.css">
 <script type="importmap">
 {
   "imports": {
@@ -32,161 +33,10 @@
   }
 }
 </script>
-    <style>
-      /* Clean Flat Design CSS */
-      
-      /* KaTeX Math Rendering - Fixed */
-      .prose .katex {
-        color: inherit !important; 
-        font-size: 1em !important; 
-        line-height: 1.2 !important; 
-        white-space: nowrap !important; 
-        vertical-align: baseline !important;
-        display: inline-block !important;
-      }
 
-      .prose .katex .katex-html {
-        white-space: nowrap !important;
-        display: inline-block !important;
-      }
-
-      .prose .katex span {
-        white-space: nowrap !important;
-      }
-      
-      .prose .katex-display {
-        display: block !important; 
-        overflow-x: auto !important; 
-        overflow-y: hidden !important;
-        margin: 1.5em 0 !important; 
-        padding: 1em 0 !important; 
-        text-align: center !important; 
-        background: #0f172a !important;
-        border-left: 3px solid #0ea5e9 !important;
-        white-space: nowrap !important;
-      }
-
-      /* Fix for inline math in text */
-      .prose p .katex,
-      .prose li .katex {
-        margin: 0 0.2em !important;
-        vertical-align: middle !important;
-      }
-
-      /* Ensure math doesn't break */
-      .prose .katex .base {
-        white-space: nowrap !important;
-      }
-
-      /* Code Blocks - Flat Design */
-      .prose pre {
-        background: #0f172a;
-        padding: 0;
-        margin: 1.5em 0;
-        overflow-x: auto;
-      }
-      
-      .prose pre code,
-      .prose pre code.hljs {
-        display: block;
-        padding: 1.5em;
-        background: transparent;
-        color: #e2e8f0;
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
-        white-space: pre;
-        overflow-x: auto;
-        line-height: 1.6;
-      }
-      
-      .prose code:not(.hljs) {
-        color: #0ea5e9;
-        padding: 0.25em 0.5em;
-        margin: 0;
-        font-size: 0.9em;
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      }
-
-      /* Smooth Animations */
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      
-      @keyframes slideIn {
-        from { transform: translateX(-20px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      
-      @keyframes pulse-subtle {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
-      }
-      
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-      
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-out;
-      }
-      
-      .animate-slide-in {
-        animation: slideIn 0.4s ease-out;
-      }
-      
-      .animate-pulse-subtle {
-        animation: pulse-subtle 2s ease-in-out infinite;
-      }
-      
-      .animate-spin {
-        animation: spin 1s linear infinite;
-      }
-
-      /* Clean Scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #475569;
-        border-radius: 0;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #64748b;
-      }
-      
-      /* Focus States - Clean */
-      .focus-clean:focus {
-        outline: none;
-        border-color: #0ea5e9;
-        background: #1e293b;
-      }
-      
-      /* Button Hover Effects */
-      .btn-clean {
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-      }
-      
-      .btn-clean:hover {
-        background: #1e293b;
-        border-color: #0ea5e9;
-        transform: translateY(-1px);
-      }
-      
-      .btn-clean:active {
-        transform: translateY(0);
-      }
-
-    </style>
-<link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 selection:bg-sky-500 selection:text-white font-sans">
-    <div id="root" class="w-full max-w-5xl my-6 sm:my-8"></div>
+<body data-theme="dark" class="min-h-screen">
+    <div id="root" class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-6 sm:my-8"></div>
     <script type="module" src="/index.tsx"></script>
 </body>
 </html>

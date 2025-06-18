@@ -111,22 +111,26 @@ const ExecuteJsCodeBlock: React.FC<{ code?: string, executionResult?: any, execu
 
   if (errorToDisplay && !isVerificationContext) { 
     return (
-       <div className="mt-6 p-5 border-l-4 border-red-500 space-y-4 bg-red-900/20">
-        <div className="flex justify-between items-center">
-            <p className="text-base font-medium text-red-300 flex items-center">
-                <InformationCircleIcon className="h-6 w-6 mr-2 flex-shrink-0" />
-                Error executing step's JavaScript.
-            </p>
-            <CopyButton textToCopy={codeForDisplay} tooltipText="Copy original AI code" size="sm"/>
-        </div>
-        <div className="space-y-3 text-sm">
-            <div>
-                <span className="text-slate-400 font-medium uppercase tracking-wider text-sm">Original Code:</span>
-                <pre className="text-slate-300 bg-slate-800/50 border-l-3 border-slate-600 p-3 mt-2 overflow-x-auto text-sm"><code className="block">{codeForDisplay}</code></pre>
+       <div className="alert alert-error mt-4">
+        <div className="flex flex-col w-full">
+            <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center">
+                    <InformationCircleIcon className="h-6 w-6 mr-2 flex-shrink-0" />
+                    <span className="font-semibold">JavaScript Execution Error</span>
+                </div>
+                <CopyButton textToCopy={codeForDisplay} tooltipText="Copy original AI code" size="sm"/>
             </div>
-             <div>
-                <span className="text-slate-400 font-medium uppercase tracking-wider text-sm">Error details:</span>
-                <p className="text-red-300 bg-slate-800/50 border-l-3 border-red-600 p-3 mt-2 whitespace-pre-wrap text-sm">{errorToDisplay}</p>
+            <div className="space-y-3">
+                <div>
+                    <div className="text-sm font-medium mb-2">Original Code:</div>
+                    <div className="mockup-code text-xs">
+                        <pre className="overflow-x-auto pr-0"><code>{codeForDisplay}</code></pre>
+                    </div>
+                </div>
+                 <div>
+                    <div className="text-sm font-medium mb-2">Error Details:</div>
+                    <div className="bg-base-200 p-3 rounded text-sm whitespace-pre-wrap">{errorToDisplay}</div>
+                </div>
             </div>
         </div>
       </div>
@@ -134,33 +138,37 @@ const ExecuteJsCodeBlock: React.FC<{ code?: string, executionResult?: any, execu
   }
   
   return (
-    <div className={`mt-6 p-5 space-y-4 ${isVerificationContext && errorToDisplay ? 'border-l-4 border-red-500 bg-red-900/20' : 'bg-slate-800/30'}`}>
-      <div>
-        <div className="flex items-center justify-between text-sm text-slate-400 mb-3">
-          <div className="flex items-center">
-            <CodeBracketIcon className="h-5 w-5 mr-2 text-sky-400" />
-            <span className="font-medium uppercase tracking-wider">JS Code{isVerificationContext ? " (Verification)" : " (Step)"}:</span>
-          </div>
-          <CopyButton textToCopy={codeForDisplay} size="sm"/>
-        </div>
-        <div className="prose prose-sm prose-invert max-w-none">
-          <MarkdownViewer content={`\`\`\`javascript\n${codeForDisplay}\n\`\`\``} />
-        </div>
-      </div>
-      <div>
-        <div className="flex items-center justify-between text-sm text-slate-400 mb-3">
-            <div className="flex items-center">
-                <CalculatorIcon className="h-5 w-5 mr-2 text-amber-400"/>
-                <span className="font-medium uppercase tracking-wider">Code Result:</span>
+    <div className={`card bg-base-200 mt-4 ${isVerificationContext && errorToDisplay ? 'border border-error' : ''}`}>
+      <div className="card-body p-4 space-y-4">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center text-sm font-medium">
+              <CodeBracketIcon className="h-5 w-5 mr-2 text-primary" />
+              <span>JS Code{isVerificationContext ? " (Verification)" : " (Step)"}:</span>
             </div>
-            <CopyButton textToCopy={displayResultText} size="sm" />
+            <CopyButton textToCopy={codeForDisplay} size="sm"/>
+          </div>
+          <div className="mockup-code text-sm">
+            <MarkdownViewer content={`\`\`\`javascript\n${codeForDisplay}\n\`\`\``} />
+          </div>
         </div>
-        <pre className={`text-base bg-slate-800/50 border-l-3 border-amber-500 p-4 overflow-x-auto ${errorToDisplay ? 'text-red-300' : 'text-amber-300'}`}>
-            <code>{displayResultText}</code>
-        </pre>
-         {isVerificationContext && errorToDisplay && (
-            <p className="mt-3 text-sm text-red-300">Verification code execution failed. See error details above.</p>
-        )}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center text-sm font-medium">
+                  <CalculatorIcon className="h-5 w-5 mr-2 text-warning"/>
+                  <span>Result:</span>
+              </div>
+              <CopyButton textToCopy={displayResultText} size="sm" />
+          </div>
+          <div className={`mockup-code ${errorToDisplay ? 'text-error' : 'text-success'}`}>
+              <pre className="overflow-x-auto pr-0"><code>{displayResultText}</code></pre>
+          </div>
+           {isVerificationContext && errorToDisplay && (
+              <div className="alert alert-warning mt-3">
+                <span className="text-sm">Verification code execution failed. See error details above.</span>
+              </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -170,9 +178,12 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
   // Enhanced validation and error handling
   if (!understanding || typeof understanding !== 'object') {
     return (
-      <div className="mb-12 pt-8 border-t border-slate-700/50">
-        <div className="p-4 bg-red-900/20 border border-red-500 rounded-md">
-          <p className="text-red-300">Problem understanding data is missing or invalid.</p>
+      <div className="mb-8">
+        <div className="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Problem analysis data is missing or invalid.</span>
         </div>
       </div>
     );
@@ -183,38 +194,38 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
     : '';
   
   return (
-    <div className="mb-12 pt-8 border-t border-slate-700/50">
-      <div className="flex justify-between items-start mb-8 pb-6">
-        <h2 className="text-3xl font-light text-sky-300 flex items-center animate-slide-in">
-          <BrainIcon className="h-8 w-8 mr-3 text-sky-400" />
+    <div className="pt-8 border-t border-slate-700/50">
+      <div className="flex items-center mb-8 pb-6">
+        <BrainIcon className="h-8 w-8 mr-3 text-blue-400 flex-shrink-0" />
+        <h2 className="text-3xl font-light text-sky-300">
           Problem Analysis
         </h2>
       </div>
-      <div className="space-y-6 text-sm">
-        {(['restatedProblem', 'keyInformation', 'problemGoal', 'imageAcknowledgement'] as const).map(field => {
+      <div className="space-y-6">
+        {(['restatedProblem', 'keyInformation', 'problemGoal', 'imageAcknowledgement'] as const).map((field, index) => {
           let title = '';
           let content = '';
           let copyContent = '';
 
           switch(field) {
             case 'restatedProblem':
-              title = 'Re-stated Problem:';
+              title = 'Re-stated Problem';
               content = understanding.restatedProblem || '';
               copyContent = understanding.restatedProblem || '';
               break;
             case 'keyInformation':
-              title = 'Key Information Identified:';
+              title = 'Key Information Identified';
               const keyInfo = Array.isArray(understanding.keyInformation) ? understanding.keyInformation : [];
               content = keyInfo.length > 0 ? keyInfo.map(info => `- ${info}`).join('\n') : "_No specific key information points listed by AI._";
               copyContent = keyInfoText;
               break;
             case 'problemGoal':
-              title = 'Problem Goal:';
+              title = 'Problem Goal';
               content = understanding.problemGoal || '';
               copyContent = understanding.problemGoal || '';
               break;
             case 'imageAcknowledgement':
-              title = 'Image Acknowledgement:';
+              title = 'Image Acknowledgement';
               content = understanding.imageAcknowledgement || '';
               copyContent = understanding.imageAcknowledgement || '';
               break;
@@ -224,12 +235,12 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
           if (!content || content.trim() === '' || (Array.isArray(content) && content.length === 0)) return null;
 
           return (
-            <div key={field} className="p-5 bg-slate-800/30 border-l-3 border-slate-600 mb-4">
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="font-medium text-slate-100 text-lg">{title}</h4>
-                <CopyButton textToCopy={copyContent} />
+            <div key={field} className="p-6 bg-slate-800/20 border-l-3 border-blue-400 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-medium text-blue-300">{title}</h3>
+                <CopyButton textToCopy={copyContent} tooltipText={`Copy ${title}`} />
               </div>
-              <div className="text-slate-300 prose prose-sm prose-invert max-w-none">
+              <div className="text-slate-300 leading-relaxed prose prose-sm prose-invert max-w-none">
                 <MarkdownViewer content={content} />
               </div>
             </div>
@@ -245,8 +256,8 @@ const NormalModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }> 
     <div className="flex items-center mb-8 pb-6">
       <CheckCircleIcon className="h-8 w-8 mr-3 text-green-400 flex-shrink-0" />
       <h2 className="text-3xl font-light text-sky-300">
-        Solution Steps
-      </h2>
+          Solution Steps
+        </h2>
     </div>
     <div className="space-y-6"> {/* Increased spacing between steps */}
       {(solution.solutionSteps || []).map((step, index) => (
@@ -368,7 +379,7 @@ const AdvancedModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }
                     <p className="text-sm text-slate-300 font-medium">Final Computed Answer (from last step):</p>
                     <CopyButton textToCopy={String(sequentialSolution.finalComputedAnswer)} />
                 </div>
-                <pre className="font-semibold text-lg text-amber-300 bg-slate-800 p-3 rounded-md overflow-x-auto">
+                <pre className="font-semibold text-lg text-amber-300 bg-slate-800 p-3 rounded-md overflow-x-auto pr-0">
                     <code>
                     {typeof sequentialSolution.finalComputedAnswer === 'object' 
                         ? JSON.stringify(sequentialSolution.finalComputedAnswer, null, 2) 
@@ -401,15 +412,29 @@ const AdvancedModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }
 };
 
 export const SolutionDisplay: React.FC<SolutionDisplayProps> = ({ solution }) => {
+  // Enhanced validation with better error handling
+  if (!solution || typeof solution !== 'object') {
+    return (
+      <div className="alert alert-error mb-8">
+        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Solution data is missing or invalid.</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="mt-12 p-6 animate-fade-in bg-slate-900/50 border-l-4 border-sky-400">
+    <div className="space-y-6">
       {solution.problemUnderstanding && (
         <ProblemUnderstandingDisplay understanding={solution.problemUnderstanding} />
       )}
-
-      {solution.sequentialSolution ? (
+      
+      {/* Check for Advanced Mode (sequential solution) */}
+      {solution.sequentialSolution && solution.sequentialSolution.steps && solution.sequentialSolution.steps.length > 0 ? (
         <AdvancedModeSolutionDisplay solution={solution} />
       ) : (
+        /* Normal Mode - show solution steps */
         <NormalModeSolutionDisplay solution={solution} />
       )}
     </div>
