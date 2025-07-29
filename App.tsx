@@ -6,7 +6,7 @@ import { SolutionDisplay } from './components/SolutionDisplay';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorMessage } from './components/ErrorMessage';
 import { solveProblemWithGemini } from './services/geminiService';
-import type { GeminiSolutionResponse, AdvancedModeProgress } from './types';
+import type { GeminiSolutionResponse, AdvancedModeProgress, ModelChoice } from './types';
 import type { SubjectType } from './config/subjectConfig';
 import { Layout } from './components/layout/Layout';
 import { HeroSection } from './components/layout/HeroSection';
@@ -21,8 +21,7 @@ const App: React.FC = () => {
     setAdvancedModeProgress(progress);
   }, []);
 
-  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType?: SubjectType) => {
-    // Enhanced input validation
+  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => {
     if (!problemText || typeof problemText !== 'string' || problemText.trim() === '') {
       if (!imageBase64) {
         setError('Please enter a problem description or upload an image.');
@@ -45,10 +44,10 @@ const App: React.FC = () => {
         imageBase64,
         isAdvancedMode,
         handleProgressUpdate,
-        subjectType
+        subjectType,
+        modelChoice
       );
       
-      // Enhanced result validation
       if (!result || typeof result !== 'object') {
         throw new Error('The AI returned an invalid response.');
       }

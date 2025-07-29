@@ -1,8 +1,9 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES } from '../constants';
+import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES, GEMINI_MODELS } from '../constants';
 import { PhotoIcon, DocumentTextIcon, SparklesIcon, ClipboardIcon, AcademicCapIcon } from './icons/InputIcons';
 import { SubjectType, SUBJECTS } from '../config/subjectConfig';
+import type { ModelChoice } from '../types';
 
 const QUICK_START_TEMPLATES = [
   { label: '🪙 Coin Toss', text: 'Calculate the probability that in 10 coin tosses, there are at least 7 heads.' },
@@ -19,7 +20,7 @@ const QUICK_START_TEMPLATES = [
 ];
 
 interface ProblemInputProps {
-  onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType?: SubjectType) => void;
+  onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => void;
   isLoading: boolean;
 }
 
@@ -31,11 +32,11 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   const [inputError, setInputError] = useState<string | null>(null);
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [selectedSubject, setSelectedSubject] = useState<SubjectType>('probability_statistics');
+  const [modelChoice, setModelChoice] = useState<ModelChoice>('gemini-2.5-flash');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageDropZoneRef = useRef<HTMLDivElement>(null);
 
   const processFile = useCallback((file: File): boolean => {
-    // Enhanced file validation
     if (!file || !(file instanceof File)) {
       setInputError('Invalid file.');
       return false;
@@ -105,7 +106,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     const newText = event.target.value;
     setProblemText(newText);
     
-    // Clear error when user starts typing
     if (inputError && (newText.trim() || imageBase64)) setInputError(null);
   };
 
@@ -134,7 +134,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     setImageBase64(null);
     setPreviewUrl(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; 
+      fileInputRef.current.value = "";
     }
     if (inputError && problemText.trim()) setInputError(null);
   };
@@ -142,7 +142,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   const handleSubmit = useCallback((event: React.FormEvent) => {
     event.preventDefault();
     
-    // Enhanced validation
     const trimmedText = problemText?.trim() || '';
     
     if (!trimmedText && !imageBase64) {
@@ -156,8 +155,8 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     }
     
     setInputError(null);
-    onSubmit(trimmedText, imageBase64, isAdvancedMode, selectedSubject);
-  }, [problemText, imageBase64, onSubmit, isAdvancedMode, selectedSubject]);
+    onSubmit(trimmedText, imageBase64, isAdvancedMode, selectedSubject, modelChoice);
+  }, [problemText, imageBase64, onSubmit, isAdvancedMode, selectedSubject, modelChoice]);
 
   const handleDirectPaste = useCallback(async (event: ClipboardEvent) => {
     if (isLoading) return;
@@ -168,7 +167,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
       if (items[i].type.indexOf('image') !== -1) {
         const file = items[i].getAsFile();
         if (file) {
-          event.preventDefault(); 
+          event.preventDefault();
           if(processFile(file)) {
             if (fileInputRef.current) {
               const dataTransfer = new DataTransfer();
@@ -176,7 +175,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
               fileInputRef.current.files = dataTransfer.files;
             }
           }
-          break; 
+          break;
         }
       }
     }
@@ -184,7 +183,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
 
   const handlePasteButtonClick = async () => {
       if (isLoading) return;
-      setInputError(null); 
+      setInputError(null);
       try {
         if (!navigator.clipboard || !navigator.clipboard.read) {
           setInputError('Browser does not support pasting from clipboard. Try Ctrl+V or select a file.');
@@ -207,7 +206,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                 }
             }
             imageFound = true;
-            break; 
+            break;
           } else if (imageType && !ALLOWED_IMAGE_TYPES.includes(imageType)) {
             setInputError(`Image format from clipboard (${imageType}) is not supported. Please use JPG, PNG, or WEBP.`);
             return;
@@ -247,7 +246,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
             Enter Your Problem
           </h2>
         
-        {/* Problem Text Input */}
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text text-base font-semibold text-gray-700">Problem Description</span>
@@ -283,7 +281,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
               </button>
             )}
           
-          {/* Quick Templates */}
           <div className="mt-4">
             <label className="label-text text-sm font-medium text-gray-600 mb-2 block">
               Or try a quick start template:
@@ -307,7 +304,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           {problemText.length > 8000 && (
             <div className="label">
               <span className={`label-text-alt text-xs ${
-                problemText.length > 9500 ? 'text-error' : 
+                problemText.length > 9500 ? 'text-error' :
                 problemText.length > 9000 ? 'text-warning' : 'text-info'
               }`}>
                 {problemText.length > 9500 ? '⚠️ Approaching character limit' :
@@ -318,7 +315,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           )}
         </div>
 
-      {/* Image Upload Section */}
         <div className="form-control mt-6">
           <label className="label">
             <span className="label-text text-base font-semibold text-gray-700">Or upload an image</span>
@@ -383,7 +379,6 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           )}
         </div>
 
-        {/* Error Message */}
         {inputError && (
           <div role="alert" className="alert alert-error mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -391,31 +386,56 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           </div>
         )}
 
-        {/* Subject Selection */}
-        <div className="form-control mt-6">
-          <label className="label">
-            <span className="label-text text-base font-semibold text-gray-700">Select Subject</span>
-          </label>
-          <select
-            className="w-full mt-2 p-3 bg-gray-50 border border-gray-300 rounded-md text-base text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
-            value={selectedSubject}
-            onChange={(e) => setSelectedSubject(e.target.value as SubjectType)}
-            disabled={isLoading}
-          >
-            {Object.entries(SUBJECTS).map(([key, subject]) => (
-              <option key={key} value={key}>
-                {subject.name}
-              </option>
-            ))}
-          </select>
-          <div className="label">
-            <span className="label-text-alt opacity-70">
-              {SUBJECTS[selectedSubject].description}
-            </span>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Subject Selection */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text text-base font-semibold text-gray-700">Select Subject</span>
+              </label>
+              <select
+                className="w-full mt-2 p-3 bg-gray-50 border border-gray-300 rounded-md text-base text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
+                value={selectedSubject}
+                onChange={(e) => setSelectedSubject(e.target.value as SubjectType)}
+                disabled={isLoading}
+              >
+                {Object.entries(SUBJECTS).map(([key, subject]) => (
+                  <option key={key} value={key}>
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+              <div className="label">
+                <span className="label-text-alt opacity-70">
+                  {SUBJECTS[selectedSubject].description}
+                </span>
+              </div>
+            </div>
+
+            {/* Model Selection */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text text-base font-semibold text-gray-700">Select Model</span>
+              </label>
+              <select
+                className="w-full mt-2 p-3 bg-gray-50 border border-gray-300 rounded-md text-base text-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200"
+                value={modelChoice}
+                onChange={(e) => setModelChoice(e.target.value as ModelChoice)}
+                disabled={isLoading}
+              >
+                {Object.entries(GEMINI_MODELS).map(([key, model]) => (
+                  <option key={key} value={key}>
+                    {model.name}
+                  </option>
+                ))}
+              </select>
+              <div className="label">
+                <span className="label-text-alt opacity-70">
+                  {GEMINI_MODELS[modelChoice].description}
+                </span>
+              </div>
+            </div>
         </div>
 
-        {/* Advanced Mode Toggle */}
         <div className="form-control mt-6">
           <div className="flex items-start">
             <div className="flex items-center h-5">
@@ -431,15 +451,14 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
             </div>
             <div className="ml-3 text-sm">
               <label htmlFor="advanced-mode" className="font-medium text-gray-800 flex items-center">
-                Advanced Mode
-                <AcademicCapIcon className="h-5 w-5 text-indigo-600 ml-2" title="Advanced mode breaks down the problem into steps to solve complex issues."/>
+                Advanced Mode (Code Execution)
+                <AcademicCapIcon className="h-5 w-5 text-indigo-600 ml-2" title="Advanced mode uses Code Execution to solve complex problems."/>
               </label>
-              <p className="text-xs text-gray-500">Breaks down the problem into detailed steps.</p>
+              <p className="text-xs text-gray-500">Uses Gemini's Code Execution for higher accuracy on complex problems.</p>
             </div>
           </div>
         </div>
 
-        {/* Submit Button */}
          <div className="mt-8">
            <div className="w-full">
              <button

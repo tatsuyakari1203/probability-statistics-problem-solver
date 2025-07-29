@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@google/genai": "^1.5.1",
-    "@google/generative-ai": "^0.24.1",
     "@tailwindcss/vite": "^4.1.10",
     "@types/react-syntax-highlighter": "^15.5.13",
     "katex": "^0.16.22",

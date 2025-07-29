@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // Định nghĩa props cho component, chỉ cần nhận vào một chuỗi markdown
 interface MarkdownViewerProps {
@@ -61,12 +61,12 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
         ul: ({node, ...props}) => <ul className="list-disc list-inside mb-4" {...props} />,
         ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-4" {...props} />,
         li: ({node, ...props}) => <li className="mb-2" {...props} />,
-        code: ({node, inline, className, children, ...props}) => {
+        code: ({node, className, children, ...props}) => {
           try {
             const match = /language-(\w+)/.exec(className || '');
             const language = match ? match[1] : '';
             
-            if (!inline) {
+            if (match) {
               // Enhanced validation for code content
               const codeContent = String(children).replace(/\n$/, '');
               
@@ -83,18 +83,17 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
               
               return (
                 <SyntaxHighlighter
-                  style={vscDarkPlus}
-                  language={language || 'javascript'}
+                  style={dracula as any}
+                  language={language || 'python'}
                   PreTag="div"
                   className="my-4"
                   customStyle={{
-                    background: 'rgb(30 41 59 / 0.5)',
                     padding: '1rem',
                     fontSize: '0.875rem',
                     lineHeight: '1.6',
-                    whiteSpace: 'pre-wrap'
+                    whiteSpace: 'pre-wrap',
+                    borderRadius: '0.5rem'
                   }}
-                  {...props}
                 >
                   {codeContent}
                 </SyntaxHighlighter>
