@@ -1,22 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
 /* Layout improvements with modern spacing */
-.problem-input-container {
-  @apply mx-auto max-w-4xl px-4 mb-8;
-}
-
-.solution-display-container {
-  @apply mx-auto max-w-4xl px-4;
-}
-
-.loading-container {
-  @apply mx-auto max-w-4xl px-4;
-}
-
-.error-container {
-  @apply mx-auto max-w-4xl px-4;
-}
+/* (Containers removed for a seamless, paper-like design) */
 
 /* Custom styles for math rendering */
 .katex {
@@ -50,6 +35,19 @@
 
 .animate-slide-in {
   animation: slide-in 0.5s ease-out;
+}
+
+@keyframes pulse-bg {
+  0%, 100% {
+    background-color: rgba(239, 246, 255, 0.7); /* Tailwind's blue-50 with opacity */
+  }
+  50% {
+    background-color: rgba(219, 234, 254, 0.7); /* Tailwind's blue-100 with opacity */
+  }
+}
+
+.animate-pulse-bg {
+  animation: pulse-bg 2s infinite;
 }
 
 /* Custom override for mockup-code padding */

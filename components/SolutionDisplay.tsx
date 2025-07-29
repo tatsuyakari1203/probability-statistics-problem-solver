@@ -83,30 +83,30 @@ const ExecuteJsCodeBlock: React.FC<{ code?: string, executionResult?: any, execu
   }
 
   return (
-    <div className={`card bg-base-200 border border-base-300 mt-4 ${isVerificationContext && errorToDisplay ? 'border-error' : ''}`}>
-      <div className="card-body p-4">
+    <div className={`mt-4 border-t border-gray-200 pt-4 ${isVerificationContext && errorToDisplay ? 'border-l-4 border-red-500 pl-4' : ''}`}>
+      <div className="p-0">
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center text-sm font-medium">
-              <CodeBracketIcon className="h-5 w-5 mr-2" />
+            <div className="flex items-center text-sm font-semibold text-gray-700">
+              <CodeBracketIcon className="h-5 w-5 mr-2 text-indigo-600" />
               <span>JS Code{isVerificationContext ? " (Verification)" : ""}</span>
             </div>
             <CopyButton textToCopy={codeForDisplay} size="sm"/>
           </div>
-          <div className="mockup-code text-sm">
+          <div className="bg-gray-50 p-2 rounded-md">
             <MarkdownViewer content={`\`\`\`javascript\n${codeForDisplay}\n\`\`\``} />
           </div>
         </div>
         <div>
           <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center text-sm font-medium">
-                  <CalculatorIcon className="h-5 w-5 mr-2"/>
+              <div className="flex items-center text-sm font-semibold text-gray-700">
+                  <CalculatorIcon className="h-5 w-5 mr-2 text-indigo-600"/>
                   <span>Result</span>
               </div>
               <CopyButton textToCopy={displayResultText} size="sm" />
           </div>
-          <div className={`mockup-code ${errorToDisplay ? 'text-error' : 'text-success'}`}>
-              <pre><code>{displayResultText}</code></pre>
+          <div className={`bg-gray-50 p-3 rounded-md text-sm ${errorToDisplay ? 'text-red-600' : 'text-green-600'}`}>
+              <pre className="whitespace-pre-wrap"><code>{displayResultText}</code></pre>
           </div>
         </div>
       </div>
@@ -121,8 +121,8 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
 
   return (
     <div className="pt-8">
-      <h2 className="text-2xl font-bold mb-4 flex items-center">
-        <BrainIcon className="h-7 w-7 mr-3" />
+      <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center tracking-tight">
+        <BrainIcon className="h-7 w-7 mr-3 text-indigo-600" />
         Problem Analysis
       </h2>
       <div className="space-y-4">
@@ -157,13 +157,13 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
           if (!content.trim()) return null;
 
           return (
-            <div key={field} className="card card-compact bg-base-200 border border-base-300">
-              <div className="card-body">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="card-title text-base">{title}</h3>
+            <div key={field} className="py-4 border-b border-gray-200 last:border-b-0">
+              <div className="p-0">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
                   <CopyButton textToCopy={copyContent} tooltipText={`Copy ${title}`} />
                 </div>
-                <div className="text-base-content/80 leading-relaxed prose prose-sm max-w-none">
+                <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none">
                   <MarkdownViewer content={content} />
                 </div>
               </div>
@@ -176,20 +176,20 @@ const ProblemUnderstandingDisplay: React.FC<{ understanding: ProblemUnderstandin
 };
 
 const NormalModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }> = ({ solution }) => (
-  <div className="pt-8 mt-8 border-t border-base-300">
-    <h2 className="text-2xl font-bold mb-4 flex items-center">
-      <CheckCircleIcon className="h-7 w-7 mr-3 text-success" />
+  <div className="pt-8 mt-8 border-t border-gray-200">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center tracking-tight">
+      <CheckCircleIcon className="h-7 w-7 mr-3 text-green-500" />
       Solution Steps
     </h2>
     <div className="space-y-4">
       {(solution.solutionSteps || []).map((step: SolutionStep, index: number) => (
-        <div key={`normal-step-${index}`} className="card card-compact bg-base-200 border border-base-300">
-          <div className="card-body">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="card-title text-base">Step {index + 1}</h3>
+        <div key={`normal-step-${index}`} className="py-4 border-b border-gray-200 last:border-b-0">
+          <div className="p-0">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-semibold text-gray-800">Step {index + 1}</h3>
               <CopyButton textToCopy={step.explanation} tooltipText={`Copy Step ${index + 1} explanation`} />
             </div>
-            <div className="text-base-content/80 leading-relaxed prose prose-sm max-w-none">
+            <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none">
               <MarkdownViewer content={step.explanation} />
             </div>
           </div>
@@ -197,22 +197,22 @@ const NormalModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }> 
       ))}
     </div>
     {solution.finalAnswer && (
-      <div className="mt-8 pt-8 border-t border-base-300">
-        <h3 className="text-xl font-bold mb-2 flex items-center">
-          <InformationCircleIcon className="h-6 w-6 mr-2" />
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+          <InformationCircleIcon className="h-6 w-6 mr-3 text-indigo-600" />
           Final Answer
         </h3>
-        <div className="alert alert-success">
-          <div className="prose prose-sm max-w-none">
+        <div className="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+          <div className="prose prose-sm max-w-none text-indigo-900">
             <MarkdownViewer content={solution.finalAnswer} />
           </div>
         </div>
       </div>
     )}
     {(solution.verificationCode && solution.verificationCode.trim() !== "") && (
-      <div className="mt-8 pt-8 border-t border-base-300">
-        <h3 className="text-xl font-bold mb-2 flex items-center">
-            <BeakerIcon className="h-6 w-6 mr-2" />
+      <div className="mt-10 pt-8 border-t border-gray-200">
+        <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+            <BeakerIcon className="h-6 w-6 mr-3 text-indigo-600" />
             Solution Verification
         </h3>
         <ExecuteJsCodeBlock code={solution.verificationCode} isVerificationContext={true} />
@@ -233,20 +233,20 @@ const AdvancedModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }
   }
 
   return (
-    <div className="pt-8 mt-8 border-t border-base-300">
-      <h2 className="text-2xl font-bold mb-4 flex items-center">
-        <CogIcon className="h-7 w-7 mr-3" />
+    <div className="pt-8 mt-8 border-t border-gray-200">
+      <h2 className="text-3xl font-extrabold text-gray-900 mb-6 flex items-center tracking-tight">
+        <CogIcon className="h-7 w-7 mr-3 text-indigo-600" />
         Advanced Sequential Analysis
       </h2>
       <div className="space-y-4">
         {sequentialSolution.steps.map((step: SequentialStepOutput, index: number) => (
-          <div key={`advanced-step-${index}`} className="card card-compact bg-base-200 border border-base-300">
-            <div className="card-body">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="card-title text-base">Step {index + 1}</h3>
+          <div key={`advanced-step-${index}`} className="py-4 border-b border-gray-200 last:border-b-0">
+            <div className="p-0">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold text-gray-800">Step {index + 1}</h3>
                 <CopyButton textToCopy={step.stepExplanation} tooltipText={`Copy Step ${index + 1} explanation`} />
               </div>
-              <div className="text-base-content/80 leading-relaxed prose prose-sm max-w-none mb-3">
+              <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none mb-4">
                 <MarkdownViewer content={step.stepExplanation} />
               </div>
               {(step.stepJsCode) && (
@@ -263,16 +263,16 @@ const AdvancedModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }
       </div>
 
       {(sequentialSolution.finalSummaryText || sequentialSolution.finalComputedAnswer !== undefined) && (
-        <div className="mt-8 pt-8 border-t border-base-300">
-          <h3 className="text-xl font-bold mb-2 flex items-center">
-              <InformationCircleIcon className="h-6 w-6 mr-2" />
+        <div className="mt-10 pt-8 border-t border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+              <InformationCircleIcon className="h-6 w-6 mr-3 text-indigo-600" />
               Final Conclusion
           </h3>
           {sequentialSolution.finalSummaryText && (
             <div className="mb-4">
-                <p className="text-sm font-medium mb-1">AI's Textual Summary:</p>
-                <div className="alert alert-info">
-                  <div className="prose prose-sm max-w-none">
+                <p className="text-base font-semibold text-gray-700 mb-2">AI's Textual Summary:</p>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                  <div className="prose prose-sm max-w-none text-blue-900">
                     <MarkdownViewer content={sequentialSolution.finalSummaryText} />
                   </div>
                 </div>
@@ -280,9 +280,9 @@ const AdvancedModeSolutionDisplay: React.FC<{ solution: GeminiSolutionResponse }
           )}
           {sequentialSolution.finalComputedAnswer !== undefined && (
              <div className="mt-4">
-                <p className="text-sm font-medium mb-1">Final Computed Answer:</p>
-                <div className="mockup-code">
-                  <pre><code>
+                <p className="text-base font-semibold text-gray-700 mb-2">Final Computed Answer:</p>
+                <div className="bg-gray-50 p-3 rounded-md text-sm">
+                  <pre className="whitespace-pre-wrap"><code>
                     {typeof sequentialSolution.finalComputedAnswer === 'object'
                         ? JSON.stringify(sequentialSolution.finalComputedAnswer, null, 2)
                         : String(sequentialSolution.finalComputedAnswer)}

@@ -88,26 +88,26 @@ const App: React.FC = () => {
     <Layout>
       <HeroSection />
 
-      <div className="problem-input-container">
+      <div className="mb-12">
         <ProblemInput onSubmit={handleSubmitProblem} isLoading={isLoading} />
       </div>
 
       {isLoading && (
-        <div className="loading-container animate-slide-in">
+        <div className="animate-slide-in my-8">
           <LoadingSpinner advancedProgress={advancedModeProgress} />
         </div>
       )}
       {error && !isLoading && (
-        <div className="error-container animate-slide-in">
+        <div className="animate-slide-in my-8">
           <ErrorMessage message={error} />
         </div>
       )}
       {solution && !error && !isLoading && (
-        <div className="solution-display-container animate-fade-in">
+        <div className="animate-fade-in my-8">
           <React.Suspense fallback={
             <div className="flex justify-center items-center p-8 sm:p-12">
               <div className="loading loading-spinner loading-lg text-primary animate-glow"></div>
-              <span className="ml-4 text-base sm:text-lg text-base-content/70">Loading results...</span>
+              <span className="ml-4 text-base sm:text-lg text-gray-500">Loading results...</span>
             </div>
           }>
             <SolutionDisplay solution={solution} />
