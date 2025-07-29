@@ -11,7 +11,7 @@ import {
     getSubjectConfig,
     detectSubjectFromProblem
 } from '../config/subjectConfig';
-import { createMainPrompt } from './promptTemplates';
+import { createMainPrompt, createSuggestionPrompt } from './promptTemplates';
 
 const getApiKey = (): string => {
   const apiKey = process.env.API_KEY;
@@ -133,5 +133,31 @@ export const solveProblemWithGemini = async (
          throw err;
     }
     throw new Error('An unknown error occurred while processing the problem.');
+  }
+};
+
+export const getProblemSuggestions = async (
+  subject: SubjectType,
+  existingSolution?: string
+): Promise<{ label: string; text: string }[]> => {
+  try {
+    const subjectConfig = getSubjectConfig(subject);
+    const prompt = createSuggestionPrompt(subjectConfig.name, existingSolution);
+    
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    });
+
+    const response = result.text;
+    if (!response) {
+      return [];
+    }
+    
+    const parsed = cleanAndParseJson<{ suggestions: { label: string; text: string }[] }>(response);
+    return parsed.suggestions || [];
+  } catch (error) {
+    console.error("Error fetching problem suggestions:", error);
+    return [];
   }
 };

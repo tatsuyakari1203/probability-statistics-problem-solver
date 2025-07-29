@@ -4,27 +4,15 @@ import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES, GEMINI_MODELS } from '../consta
 import { PhotoIcon, DocumentTextIcon, SparklesIcon, ClipboardIcon, AcademicCapIcon } from './icons/InputIcons';
 import { SubjectType, SUBJECTS } from '../config/subjectConfig';
 import type { ModelChoice } from '../types';
-
-const QUICK_START_TEMPLATES = [
-  { label: '🪙 Coin Toss', text: 'Calculate the probability that in 10 coin tosses, there are at least 7 heads.' },
-  { label: '🔴 Ball Problem', text: 'A box contains 5 red and 3 blue balls. 3 balls are drawn randomly without replacement. Calculate the probability of getting exactly 2 red balls.' },
-  { label: '📊 Normal Distribution', text: 'The test scores of a class follow a normal distribution with a mean of 75 and a standard deviation of 10. Calculate the probability that a student scores between 80 and 90.' },
-  { label: '🎯 Confidence Interval', text: 'A sample of 50 students has a mean score of 82 with a standard deviation of 8. Calculate the 95% confidence interval for the true mean score of the population.' },
-  { label: '🎲 Bayes\' Theorem', text: 'A test for a disease is 99% accurate for people who have it and 95% accurate for people who don\'t. If 1% of the population has the disease, what is the probability that a person who tests positive actually has it?' },
-  { label: '📈 Linear Regression', text: 'Given the data points (1, 2), (2, 3), (3, 5), (4, 7), find the equation of the linear regression line.' },
-  { label: '⚖️ Balance Equation', text: 'Balance the chemical equation: C₂H₆ + O₂ → CO₂ + H₂O' },
-  { label: '🔬 Stoichiometry', text: 'How many grams of water (H₂O) are produced from the combustion of 10 grams of methane (CH₄) with excess oxygen (O₂)? The reaction is CH₄ + 2O₂ → CO₂ + 2H₂O.' },
-  { label: '🧪 Calculate pH', text: 'Calculate the pH of a 0.01M HCl solution.' },
-  { label: '📈 Derivative', text: 'Find the derivative of the function f(x) = x³ + 2x² - 5x + 1' },
-  { label: '🚗 Kinematics', text: 'A car accelerates from rest to 60 mph in 5 seconds. What is its acceleration and how far did it travel?' },
-];
+import { getProblemSuggestions } from '../services/geminiService';
 
 interface ProblemInputProps {
   onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => void;
   isLoading: boolean;
+  lastSolution?: string;
 }
 
-export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading }) => {
+export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading, lastSolution }) => {
   const [problemText, setProblemText] = useState<string>('');
   const [problemImage, setProblemImage] = useState<File | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -33,8 +21,21 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [selectedSubject, setSelectedSubject] = useState<SubjectType>('probability_statistics');
   const [modelChoice, setModelChoice] = useState<ModelChoice>('gemini-2.5-flash');
+  const [suggestions, setSuggestions] = useState<{ label: string; text: string }[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState<boolean>(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageDropZoneRef = useRef<HTMLDivElement>(null);
+
+  const fetchSuggestions = useCallback(async (subject: SubjectType, solution?: string) => {
+    setSuggestionsLoading(true);
+    const result = await getProblemSuggestions(subject, solution);
+    setSuggestions(result);
+    setSuggestionsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchSuggestions(selectedSubject, lastSolution);
+  }, [selectedSubject, lastSolution, fetchSuggestions]);
 
   const processFile = useCallback((file: File): boolean => {
     if (!file || !(file instanceof File)) {
@@ -286,18 +287,24 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
               Or try a quick start template:
             </label>
             <div className="flex flex-wrap gap-2">
-              {QUICK_START_TEMPLATES.map((template, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setProblemText(template.text)}
-                  className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200 disabled:opacity-50"
-                  disabled={isLoading}
-                  title={template.text}
-                >
-                  {template.label}
-                </button>
-              ))}
+              {suggestionsLoading ? (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <div key={index} className="skeleton h-8 w-28 rounded-full"></div>
+                ))
+              ) : (
+                suggestions.map((template, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setProblemText(template.text)}
+                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200 disabled:opacity-50"
+                    disabled={isLoading}
+                    title={template.text}
+                  >
+                    {template.label}
+                  </button>
+                ))
+              )}
             </div>
           </div>
           </div>

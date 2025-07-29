@@ -13,6 +13,7 @@ import { HeroSection } from './components/layout/HeroSection';
 
 const App: React.FC = () => {
   const [solution, setSolution] = useState<GeminiSolutionResponse | null>(null);
+  const [lastSolutionText, setLastSolutionText] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [advancedModeProgress, setAdvancedModeProgress] = useState<AdvancedModeProgress | null>(null);
@@ -53,6 +54,7 @@ const App: React.FC = () => {
       }
       
       setSolution(result);
+      setLastSolutionText(JSON.stringify(result.solution));
 
     } catch (err) {
       // Enhanced error handling with more specific error messages
@@ -88,7 +90,7 @@ const App: React.FC = () => {
       <HeroSection />
 
       <div className="mb-12">
-        <ProblemInput onSubmit={handleSubmitProblem} isLoading={isLoading} />
+        <ProblemInput onSubmit={handleSubmitProblem} isLoading={isLoading} lastSolution={lastSolutionText} />
       </div>
 
       {isLoading && (

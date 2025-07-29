@@ -51,3 +51,30 @@ ${isAdvancedMode ? advancedModeInstructions : standardModeInstructions}
 Format all textual content using GitHub Flavored Markdown. Use LaTeX for math.
 `;
 };
+
+export const createSuggestionPrompt = (subject: string, existingSolution?: string) => {
+  const context = existingSolution
+    ? `Based on the following recently solved problem, suggest new, related problems. Solution: "${existingSolution}"`
+    : `Suggest a diverse and interesting set of random problems related to ${subject}.`;
+
+  return `
+You are an expert assistant for a learning application that helps users solve problems in various subjects, including Probability & Statistics, Chemistry, and Calculus. Your task is to generate a list of 6-8 interesting and relevant sample problems for the selected subject: ${subject}.
+
+${context}
+
+**Instructions:**
+1.  Provide a list of 6-8 unique problem statements.
+2.  The problems should be well-suited for a learning environment, ranging from foundational concepts to more challenging applications.
+3.  For each problem, provide a short, catchy label that includes a relevant emoji at the beginning (e.g., "🪙 Coin Toss," "🎲 Bayes' Theorem").
+4.  The problems should be varied and cover different aspects of the subject.
+5.  Output a SINGLE, VALID JSON object with this exact structure:
+    {
+      "suggestions": [
+        {
+          "label": "...",
+          "text": "..."
+        }
+      ]
+    }
+`;
+};
