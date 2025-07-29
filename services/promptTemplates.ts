@@ -3,10 +3,12 @@ import { SubjectConfig } from '../config/subjectConfig';
 export const createMainPrompt = (
   problemDescription: string,
   imageBase64: string | null,
+  documentFile: File | null,
   subjectConfig: SubjectConfig,
   isAdvancedMode: boolean
 ) => {
   const imageContextNote = imageBase64 ? "(Note: An image is attached. Consider its content.)" : "";
+  const documentContextNote = documentFile ? "(Note: A document has been uploaded. Prioritize its content as the primary source of information for solving the problem.)" : "";
 
   const advancedModeInstructions = `
 -   When calculations are needed, use the Code Execution tool to generate and run Python code.
@@ -25,6 +27,7 @@ Your task is to solve the following problem and provide a detailed, step-by-step
 **Problem Description:**
 "${problemDescription}"
 ${imageContextNote}
+${documentContextNote}
 
 **Instructions:**
 1.  **Analyze the Problem:** In the \`problemAnalysis\` section, restate the problem, list the key information, and define the goal.

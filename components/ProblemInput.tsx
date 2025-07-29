@@ -1,13 +1,13 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES, GEMINI_MODELS } from '../constants';
+import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES, GEMINI_MODELS, MAX_DOCUMENT_SIZE_MB, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { PhotoIcon, DocumentTextIcon, SparklesIcon, ClipboardIcon, AcademicCapIcon } from './icons/InputIcons';
 import { SubjectType, SUBJECTS } from '../config/subjectConfig';
 import type { ModelChoice } from '../types';
 import { getProblemSuggestions } from '../services/geminiService';
 
 interface ProblemInputProps {
-  onSubmit: (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => void;
+  onSubmit: (problemText: string, imageBase64: string | null, document: File | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => void;
   isLoading: boolean;
   lastSolution?: string;
 }
@@ -17,6 +17,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading,
   const [problemImage, setProblemImage] = useState<File | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [inputError, setInputError] = useState<string | null>(null);
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
   const [selectedSubject, setSelectedSubject] = useState<SubjectType>('probability_statistics');
@@ -24,7 +25,9 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading,
   const [suggestions, setSuggestions] = useState<{ label: string; text: string }[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState<boolean>(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
   const imageDropZoneRef = useRef<HTMLDivElement>(null);
+  const docDropZoneRef = useRef<HTMLDivElement>(null);
 
   const fetchSuggestions = useCallback(async (subject: SubjectType, solution?: string) => {
     setSuggestionsLoading(true);
@@ -140,13 +143,50 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading,
     if (inputError && problemText.trim()) setInputError(null);
   };
 
+  const processDocument = (file: File) => {
+    if (file.size > MAX_DOCUMENT_SIZE_MB * 1024 * 1024) {
+      setInputError(`Document size cannot exceed ${MAX_DOCUMENT_SIZE_MB}MB.`);
+      setDocumentFile(null);
+      return;
+    }
+    if (!ALLOWED_DOCUMENT_TYPES.includes(file.type)) {
+      setInputError('Unsupported document format. Please select PDF, TXT, or DOCX.');
+      setDocumentFile(null);
+      return;
+    }
+    setDocumentFile(file);
+    setInputError(null);
+  };
+
+  const handleDocumentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      processDocument(file);
+    }
+  };
+
+  const handleDocumentDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processDocument(e.dataTransfer.files[0]);
+    }
+  };
+
+  const removeDocument = () => {
+    setDocumentFile(null);
+    if (docInputRef.current) {
+      docInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = useCallback((event: React.FormEvent) => {
     event.preventDefault();
     
     const trimmedText = problemText?.trim() || '';
     
-    if (!trimmedText && !imageBase64) {
-      setInputError('Please enter a problem description or upload/paste an image.');
+    if (!trimmedText && !imageBase64 && !documentFile) {
+      setInputError('Please enter a problem, upload an image, or provide a document.');
       return;
     }
     
@@ -156,8 +196,8 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading,
     }
     
     setInputError(null);
-    onSubmit(trimmedText, imageBase64, isAdvancedMode, selectedSubject, modelChoice);
-  }, [problemText, imageBase64, onSubmit, isAdvancedMode, selectedSubject, modelChoice]);
+    onSubmit(trimmedText, imageBase64, documentFile, isAdvancedMode, selectedSubject, modelChoice);
+  }, [problemText, imageBase64, documentFile, onSubmit, isAdvancedMode, selectedSubject, modelChoice]);
 
   const handleDirectPaste = useCallback(async (event: ClipboardEvent) => {
     if (isLoading) return;
@@ -382,6 +422,48 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading,
                   ✕
                 </button>
               </div>
+            </div>
+          )}
+        </div>
+
+        <div className="form-control mt-6">
+          <label className="label">
+            <span className="label-text text-base font-semibold text-gray-700">Or upload a document for context (RAG)</span>
+          </label>
+          <div
+            ref={docDropZoneRef}
+            className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-500 transition-colors cursor-pointer bg-gray-50"
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation();}}
+            onDrop={handleDocumentDrop}
+            onClick={() => !isLoading && docInputRef.current?.click()}
+          >
+            <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <p className="text-base font-medium text-gray-700 mb-2">
+              Drag & drop or click to select a document
+            </p>
+            <p className="text-xs text-gray-500">
+              (Max {MAX_DOCUMENT_SIZE_MB}MB, PDF, TXT, or DOCX)
+            </p>
+            <input
+              type="file"
+              ref={docInputRef}
+              accept={ALLOWED_DOCUMENT_TYPES.join(',')}
+              onChange={handleDocumentChange}
+              className="hidden"
+              disabled={isLoading}
+            />
+          </div>
+          {documentFile && (
+            <div className="mt-4 flex items-center justify-center">
+                <span className="text-sm text-gray-600">{documentFile.name}</span>
+                <button
+                    type="button"
+                    onClick={removeDocument}
+                    className="btn btn-ghost btn-xs ml-2"
+                    disabled={isLoading}
+                >
+                    ✕
+                </button>
             </div>
           )}
         </div>

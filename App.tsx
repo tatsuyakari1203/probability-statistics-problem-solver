@@ -22,12 +22,10 @@ const App: React.FC = () => {
     setAdvancedModeProgress(progress);
   }, []);
 
-  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => {
-    if (!problemText || typeof problemText !== 'string' || problemText.trim() === '') {
-      if (!imageBase64) {
-        setError('Please enter a problem description or upload an image.');
-        return;
-      }
+  const handleSubmitProblem = useCallback(async (problemText: string, imageBase64: string | null, documentFile: File | null, isAdvancedMode: boolean, subjectType: SubjectType, modelChoice: ModelChoice) => {
+    if (!problemText && !imageBase64 && !documentFile) {
+      setError('Please enter a problem, upload an image, or provide a document.');
+      return;
     }
 
     setIsLoading(true);
@@ -43,6 +41,7 @@ const App: React.FC = () => {
       const result = await solveProblemWithGemini(
         problemText,
         imageBase64,
+        documentFile,
         isAdvancedMode,
         handleProgressUpdate,
         subjectType,

@@ -55,18 +55,20 @@ const cleanAndParseJson = <T>(jsonStr: string): T => {
 export const solveProblemWithGemini = async (
   problemDescription: string,
   imageBase64: string | null,
+  documentFile: File | null,
   isAdvancedMode: boolean,
   onProgressUpdate: (progress: AdvancedModeProgress | null) => void,
   subjectType: SubjectType,
   modelChoice: ModelChoice,
   retries: number = 1
 ): Promise<GeminiSolutionResponse> => {
+  let uploadedFile;
   try {
     onProgressUpdate({ currentStep: 1, totalSteps: 2, stepDescription: "Initializing...", phase: 'planning' });
     const detectedSubject = subjectType || detectSubjectFromProblem(problemDescription);
     const subjectConfig = getSubjectConfig(detectedSubject);
 
-    const mainPrompt = createMainPrompt(problemDescription, imageBase64, subjectConfig, isAdvancedMode);
+    const mainPrompt = createMainPrompt(problemDescription, imageBase64, documentFile, subjectConfig, isAdvancedMode);
     
     const contents: Content[] = [];
     const parts: Part[] = [];
@@ -77,6 +79,15 @@ export const solveProblemWithGemini = async (
         const pureBase64 = imageBase64.split(',')[1];
         parts.push({ inlineData: { mimeType, data: pureBase64 } });
     }
+
+    if (documentFile) {
+      onProgressUpdate({ currentStep: 1, totalSteps: 3, stepDescription: "Uploading document...", phase: 'planning' });
+      uploadedFile = await ai.files.upload({
+        file: documentFile,
+      });
+      parts.push({ fileData: { mimeType: uploadedFile.mimeType, fileUri: uploadedFile.uri } });
+    }
+
     parts.push({ text: mainPrompt });
     contents.push({ role: "user", parts });
 
@@ -126,13 +137,19 @@ export const solveProblemWithGemini = async (
     
     if (err instanceof Error && err.message.includes("Could not parse") && retries > 0) {
         console.warn(`JSON parse failed. Retrying... (${retries - 1} retries left)`);
-        return solveProblemWithGemini(problemDescription, imageBase64, isAdvancedMode, onProgressUpdate, subjectType, modelChoice, retries - 1);
+        return solveProblemWithGemini(problemDescription, imageBase64, documentFile, isAdvancedMode, onProgressUpdate, subjectType, modelChoice, retries - 1);
     }
     
     if (err instanceof Error) {
          throw err;
     }
     throw new Error('An unknown error occurred while processing the problem.');
+  } finally {
+    if (uploadedFile) {
+      if (uploadedFile.name) {
+        await ai.files.delete({ name: uploadedFile.name });
+      }
+    }
   }
 };
 
