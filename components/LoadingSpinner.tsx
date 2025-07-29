@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import * as React from 'react';
 import type { AdvancedModeProgress } from '../types';
 
 interface LoadingSpinnerProps {
@@ -14,10 +14,10 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ advancedProgress
         <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
         
         <h3 className="card-title text-xl mb-2">
-          {advancedProgress && advancedProgress.totalSteps > 0 ? 'Đang xử lý chế độ nâng cao...' : 'Đang phân tích bài toán của bạn...'}
+          {advancedProgress && advancedProgress.totalSteps > 0 ? 'Processing in Advanced Mode...' : 'Analyzing your problem...'}
         </h3>
         <p className="text-base-content/70 mb-4">
-          Quá trình này có thể mất vài phút
+          This may take a few moments
         </p>
         
         {advancedProgress && advancedProgress.totalSteps > 0 && (
@@ -26,7 +26,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ advancedProgress
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-primary">
-                    Bước hiện tại: {advancedProgress.currentStep}
+                    Current Step: {advancedProgress.currentStep}
                   </span>
                   <span className="text-sm opacity-70">
                     {advancedProgress.currentStep} / {advancedProgress.totalSteps}

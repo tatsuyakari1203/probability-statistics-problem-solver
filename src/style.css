@@ -1,339 +1,58 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* Modern Color Palette & Theme Variables */
-:root {
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
-  --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.2);
-}
-
 /* Layout improvements with modern spacing */
 .problem-input-container {
-  @apply mx-2 sm:mx-4 mb-8 sm:mb-12;
+  @apply mx-auto max-w-4xl px-4 mb-8;
 }
 
 .solution-display-container {
-  @apply mx-2 sm:mx-4;
+  @apply mx-auto max-w-4xl px-4;
 }
 
 .loading-container {
-  @apply mx-2 sm:mx-4;
+  @apply mx-auto max-w-4xl px-4;
 }
 
 .error-container {
-  @apply mx-2 sm:mx-4;
-}
-
-/* Enhanced Form Controls with Glass Morphism */
-.textarea {
-  width: 100% !important;
-  text-align: left !important;
-  padding: 1.25rem !important;
-  box-sizing: border-box !important;
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 1rem !important;
-  box-shadow: var(--shadow-soft) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* Enhanced Select Dropdown */
-.select {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 2px solid rgba(102, 126, 234, 0.3) !important;
-  border-radius: 1rem !important;
-  box-shadow: var(--shadow-soft) !important;
-  color: #374151 !important;
-  font-weight: 500 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.select:focus {
-  background: rgba(255, 255, 255, 1) !important;
-  border-color: rgba(102, 126, 234, 0.6) !important;
-  box-shadow: var(--shadow-medium), 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
-  transform: translateY(-2px) !important;
-  outline: none !important;
-}
-
-.select option {
-  background: white !important;
-  color: #374151 !important;
-  padding: 0.75rem !important;
-  font-weight: 500 !important;
-}
-
-.select option:hover,
-.select option:focus {
-  background: rgba(102, 126, 234, 0.1) !important;
-  color: #1f2937 !important;
-}
-
-.textarea:focus {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(102, 126, 234, 0.5) !important;
-  box-shadow: var(--shadow-medium), 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* Enhanced Cards with Modern Design */
-.card {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(15px) !important;
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--shadow-soft) !important;
-  border-radius: 1.5rem !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.card:hover {
-  transform: translateY(-4px) !important;
-  box-shadow: var(--shadow-medium) !important;
-}
-
-/* Enhanced Buttons */
-.btn {
-  border-radius: 1rem !important;
-  font-weight: 600 !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: var(--shadow-soft) !important;
-}
-
-.btn-primary {
-  background: var(--primary-gradient) !important;
-  border: none !important;
-  color: white !important;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-medium) !important;
-  filter: brightness(1.1) !important;
-}
-
-.btn-secondary {
-  background: var(--secondary-gradient) !important;
-  border: none !important;
-  color: white !important;
-}
-
-.btn-accent {
-  background: var(--accent-gradient) !important;
-  border: none !important;
-  color: white !important;
+  @apply mx-auto max-w-4xl px-4;
 }
 
 /* Custom styles for math rendering */
 .katex {
-  color: inherit !important;
-  font-size: 1em !important;
-  line-height: 1.2 !important;
-  white-space: nowrap !important;
-  vertical-align: baseline !important;
-  display: inline-block !important;
+  font-size: 1.1em !important;
 }
 
-.katex .katex-html {
-  white-space: nowrap !important;
-  display: inline-block !important;
-}
-
-/* Enhanced Animation Classes */
+/* Basic Animation Classes */
 @keyframes fade-in {
   from { 
     opacity: 0;
-    transform: translateY(20px);
   }
   to { 
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 @keyframes slide-in {
   from { 
-    transform: translateY(-30px) scale(0.95); 
+    transform: translateY(20px); 
     opacity: 0; 
   }
   to { 
-    transform: translateY(0) scale(1); 
+    transform: translateY(0); 
     opacity: 1; 
   }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes glow {
-  0%, 100% { box-shadow: var(--shadow-soft); }
-  50% { box-shadow: var(--shadow-medium), 0 0 20px rgba(102, 126, 234, 0.3); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
 .animate-fade-in {
-  animation: fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fade-in 0.5s ease-out;
 }
 
 .animate-slide-in {
-  animation: slide-in 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
-}
-
-.animate-pulse-subtle {
-  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Loading Shimmer Effect */
-.loading-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.1) 25%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.1) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* Enhanced Alerts */
-.alert {
-  border-radius: 1rem !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--shadow-soft) !important;
-}
-
-.alert-error {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
-}
-
-.alert-success {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1)) !important;
-  border-color: rgba(34, 197, 94, 0.3) !important;
-}
-
-.alert-warning {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1)) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-
-/* Enhanced Progress Bars */
-.progress {
-  border-radius: 1rem !important;
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(5px) !important;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-}
-
-.progress-primary::-webkit-progress-value {
-  background: var(--primary-gradient) !important;
-  border-radius: 1rem !important;
-}
-
-/* Enhanced Loading Spinner */
-.loading {
-  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.3)) !important;
-}
-
-/* Enhanced Hero Section */
-.hero {
-  background: var(--primary-gradient) !important;
-  backdrop-filter: blur(20px) !important;
-  box-shadow: var(--shadow-medium) !important;
-}
-
-/* Code highlighting with modern theme */
-.hljs {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(10px) !important;
-  border-radius: 0.75rem !important;
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--shadow-soft) !important;
-}
-
-/* Enhanced Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--glass-bg);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-gradient);
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #667eea 100%);
-  background-clip: content-box;
-}
-
-/* Enhanced Input Fields */
-.input, .select {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: var(--shadow-soft) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.input:focus, .select:focus {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(102, 126, 234, 0.5) !important;
-  box-shadow: var(--shadow-medium), 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Enhanced Dropdown */
-.dropdown-content {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(15px) !important;
-  border: 1px solid var(--glass-border) !important;
-  border-radius: 1rem !important;
-  box-shadow: var(--shadow-strong) !important;
+  animation: slide-in 0.5s ease-out;
 }
 
 /* Custom override for mockup-code padding */
 .mockup-code pre {
   padding-right: 0 !important;
-}
-
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: transform, box-shadow, background, border-color, opacity !important;
-  transition-duration: 0.2s !important;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
 }

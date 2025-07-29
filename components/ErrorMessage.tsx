@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { ExclamationTriangleIcon } from './icons/AlertIcons';
 
 interface ErrorMessageProps {
@@ -11,13 +11,13 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
       <ExclamationTriangleIcon className="h-6 w-6 flex-shrink-0" />
       <div>
         <h3 className="font-bold text-lg mb-1">
-          Lỗi xử lý yêu cầu
+          Error Processing Request
         </h3>
         <div className="text-sm opacity-90">
           {message}
         </div>
         <div className="text-xs opacity-70 mt-2">
-          Vui lòng thử lại hoặc kiểm tra dữ liệu đầu vào.
+          Please try again or check your input data.
         </div>
       </div>
     </div>

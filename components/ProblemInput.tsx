@@ -23,17 +23,17 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
   const processFile = useCallback((file: File): boolean => {
     // Enhanced file validation
     if (!file || !(file instanceof File)) {
-      setInputError('Tệp không hợp lệ.');
+      setInputError('Invalid file.');
       return false;
     }
 
     if (file.size === 0) {
-      setInputError('Tệp trống. Vui lòng chọn tệp khác.');
+      setInputError('Empty file. Please select another file.');
       return false;
     }
 
     if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-      setInputError(`Kích thước hình ảnh không được vượt quá ${MAX_IMAGE_SIZE_MB}MB.`);
+      setInputError(`Image size cannot exceed ${MAX_IMAGE_SIZE_MB}MB.`);
       setProblemImage(null);
       setImageBase64(null);
       setPreviewUrl(null);
@@ -41,7 +41,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
       return false;
     }
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setInputError('Định dạng hình ảnh không được hỗ trợ. Vui lòng chọn JPG, PNG hoặc WEBP.');
+      setInputError('Unsupported image format. Please select JPG, PNG, or WEBP.');
       setProblemImage(null);
       setImageBase64(null);
       setPreviewUrl(null);
@@ -59,17 +59,17 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           setImageBase64(result);
           setPreviewUrl(result);
         } else {
-          throw new Error('Kết quả đọc tệp không hợp lệ.');
+          throw new Error('Invalid file reading result.');
         }
       } catch (error) {
-        setInputError('Lỗi xử lý tệp hình ảnh.');
+        setInputError('Error processing image file.');
         setProblemImage(null);
         setImageBase64(null);
         setPreviewUrl(null);
       }
     };
     reader.onerror = () => {
-        setInputError('Không thể đọc tệp hình ảnh.');
+        setInputError('Could not read image file.');
         setProblemImage(null);
         setImageBase64(null);
         setPreviewUrl(null);
@@ -78,7 +78,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     try {
       reader.readAsDataURL(file);
     } catch (error) {
-      setInputError('Lỗi đọc tệp hình ảnh.');
+      setInputError('Error reading image file.');
       setProblemImage(null);
       setImageBase64(null);
       setPreviewUrl(null);
@@ -132,12 +132,12 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
     const trimmedText = problemText?.trim() || '';
     
     if (!trimmedText && !imageBase64) {
-      setInputError('Vui lòng nhập mô tả bài toán hoặc tải lên/dán hình ảnh.');
+      setInputError('Please enter a problem description or upload/paste an image.');
       return;
     }
     
     if (trimmedText.length > 10000) {
-      setInputError('Mô tả bài toán quá dài. Vui lòng rút gọn dưới 10,000 ký tự.');
+      setInputError('Problem description is too long. Please shorten it to under 10,000 characters.');
       return;
     }
     
@@ -214,10 +214,11 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
 
   useEffect(() => {
     const dropZone = imageDropZoneRef.current;
+    const pasteHandler = (event: ClipboardEvent) => handleDirectPaste(event);
     if (dropZone) {
-      dropZone.addEventListener('paste', handleDirectPaste as EventListener);
+      dropZone.addEventListener('paste', pasteHandler);
       return () => {
-        dropZone.removeEventListener('paste', handleDirectPaste as EventListener);
+        dropZone.removeEventListener('paste', pasteHandler);
       };
     }
   }, [handleDirectPaste]);
@@ -229,15 +230,15 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
         <div className="card-body">
           <h2 className="card-title text-2xl mb-6">
             <DocumentTextIcon className="h-8 w-8 text-primary" />
-            Nhập bài toán của bạn
+            Enter Your Problem
           </h2>
         
         {/* Problem Text Input */}
         <div className="form-control w-full">
           <label className="label">
-            <span className="label-text text-lg font-medium">Mô tả bài toán</span>
+            <span className="label-text text-lg font-medium">Problem Description</span>
             <span className="label-text-alt text-sm opacity-70">
-              {problemText.length}/10,000 ký tự
+              {problemText.length}/10,000 characters
             </span>
           </label>
           <div className="relative w-full">
@@ -245,7 +246,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                value={problemText}
                onChange={handleTextChange}
                onKeyDown={handleKeyDown}
-               placeholder="Ví dụ: Tính xác suất để trong 10 lần tung đồng xu, có ít nhất 7 lần xuất hiện mặt ngửa...&#10;&#10;Hoặc mô tả chi tiết bài toán xác suất và thống kê của bạn..."
+               placeholder="Example: Calculate the probability that in 10 coin tosses, there are at least 7 heads...&#10;&#10;Or describe your probability and statistics problem in detail..."
                className={`textarea textarea-bordered textarea-lg min-h-[8rem] max-h-[20rem] resize-y transition-all duration-200 focus:textarea-primary w-full text-left ${
                  problemText.length > 9000 ? 'textarea-warning' : ''
                } ${
@@ -262,7 +263,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                 onClick={() => setProblemText('')}
                 className="btn btn-ghost btn-xs absolute top-2 right-2 opacity-50 hover:opacity-100"
                 disabled={isLoading}
-                title="Xóa nội dung"
+                title="Clear content"
               >
                 ✕
               </button>
@@ -272,90 +273,91 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           <div className="mt-3">
             <div className="flex flex-wrap gap-2">
               <div className="dropdown dropdown-bottom">
-                <div tabIndex={0} role="button" className="btn btn-ghost btn-xs" disabled={isLoading}>
-                  📝 Mẫu có sẵn
-                </div>
+                <button type="button" tabIndex={0} className="btn btn-ghost btn-xs" disabled={isLoading}>
+                  📝 Templates
+                </button>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-80 max-h-60 overflow-y-auto">
                   {/* Xác suất & Thống kê */}
-                  <li className="menu-title"><span>📊 Xác suất & Thống kê</span></li>
+                  {/* Probability & Statistics */}
+                  <li className="menu-title"><span>📊 Probability & Statistics</span></li>
                   <li>
-                    <a onClick={() => setProblemText('Tính xác suất để trong 10 lần tung đồng xu, có ít nhất 7 lần xuất hiện mặt ngửa.')}>
-                      🪙 Xác suất tung đồng xu
+                    <a onClick={() => setProblemText('Calculate the probability that in 10 coin tosses, there are at least 7 heads.')}>
+                      🪙 Coin Toss Probability
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Một hộp có 5 bi đỏ và 3 bi xanh. Lấy ngẫu nhiên 3 bi không hoàn lại. Tính xác suất để có đúng 2 bi đỏ.')}>
-                      🔴 Bài toán bi màu
+                    <a onClick={() => setProblemText('A box contains 5 red and 3 blue balls. 3 balls are drawn randomly without replacement. Calculate the probability of getting exactly 2 red balls.')}>
+                      🔴 Colored Ball Problem
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Điểm thi của một lớp tuân theo phân phối chuẩn với trung bình 75 và độ lệch chuẩn 10. Tính xác suất một học sinh có điểm từ 80 đến 90.')}>
-                      📊 Phân phối chuẩn
+                    <a onClick={() => setProblemText('The test scores of a class follow a normal distribution with a mean of 75 and a standard deviation of 10. Calculate the probability that a student scores between 80 and 90.')}>
+                      📊 Normal Distribution
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Số khách hàng đến cửa hàng mỗi giờ tuân theo phân phối Poisson với λ = 5. Tính xác suất có đúng 3 khách hàng trong 1 giờ.')}>
-                      🏪 Phân phối Poisson
+                    <a onClick={() => setProblemText('The number of customers arriving at a store per hour follows a Poisson distribution with λ = 5. Calculate the probability of exactly 3 customers in 1 hour.')}>
+                      🏪 Poisson Distribution
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Từ dữ liệu mẫu: [12, 15, 18, 20, 22, 25, 28, 30]. Tính trung bình, phương sai, độ lệch chuẩn và khoảng tin cậy 95%.')}>
-                      📈 Thống kê mô tả
-                    </a>
-                  </li>
-                  
-                  {/* Vật lý */}
-                  <li className="menu-title"><span>⚛️ Vật lý</span></li>
-                  <li>
-                    <a onClick={() => setProblemText('Một vật có khối lượng 2kg chuyển động với vận tốc 10m/s. Tính động năng của vật.')}>
-                      🏃 Động năng
-                    </a>
-                  </li>
-                  <li>
-                    <a onClick={() => setProblemText('Một điện tích q = 2μC đặt trong điện trường đều E = 1000V/m. Tính lực tác dụng lên điện tích.')}>
-                      ⚡ Điện trường
-                    </a>
-                  </li>
-                  <li>
-                    <a onClick={() => setProblemText('Một lò xo có độ cứng k = 100N/m bị nén 5cm. Tính thế năng đàn hồi của lò xo.')}>
-                      🌀 Thế năng đàn hồi
+                    <a onClick={() => setProblemText('From the sample data: [12, 15, 18, 20, 22, 25, 28, 30]. Calculate the mean, variance, standard deviation, and 95% confidence interval.')}>
+                      📈 Descriptive Statistics
                     </a>
                   </li>
                   
-                  {/* Hóa học */}
-                  <li className="menu-title"><span>🧪 Hóa học</span></li>
+                  {/* Physics */}
+                  <li className="menu-title"><span>⚛️ Physics</span></li>
                   <li>
-                    <a onClick={() => setProblemText('Cân bằng phương trình hóa học: C₂H₆ + O₂ → CO₂ + H₂O')}>
-                      ⚖️ Cân bằng phương trình
+                    <a onClick={() => setProblemText('An object with a mass of 2kg is moving at a velocity of 10m/s. Calculate its kinetic energy.')}>
+                      🏃 Kinetic Energy
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Tính pH của dung dịch HCl 0.01M.')}>
-                      🧪 Tính pH
+                    <a onClick={() => setProblemText('A charge q = 2μC is placed in a uniform electric field E = 1000V/m. Calculate the force on the charge.')}>
+                      ⚡ Electric Field
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('A spring with a stiffness of k = 100N/m is compressed by 5cm. Calculate the elastic potential energy of the spring.')}>
+                      🌀 Elastic Potential Energy
                     </a>
                   </li>
                   
-                  {/* Toán học */}
-                  <li className="menu-title"><span>📐 Toán học</span></li>
+                  {/* Chemistry */}
+                  <li className="menu-title"><span>🧪 Chemistry</span></li>
                   <li>
-                    <a onClick={() => setProblemText('Tính đạo hàm của hàm số f(x) = x³ + 2x² - 5x + 1')}>
-                      📈 Đạo hàm
+                    <a onClick={() => setProblemText('Balance the chemical equation: C₂H₆ + O₂ → CO₂ + H₂O')}>
+                      ⚖️ Balance Equation
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Giải hệ phương trình: 2x + 3y = 7; x - y = 1')}>
-                      🔢 Hệ phương trình
+                    <a onClick={() => setProblemText('Calculate the pH of a 0.01M HCl solution.')}>
+                      🧪 Calculate pH
+                    </a>
+                  </li>
+                  
+                  {/* General Math */}
+                  <li className="menu-title"><span>📐 General Math</span></li>
+                  <li>
+                    <a onClick={() => setProblemText('Find the derivative of the function f(x) = x³ + 2x² - 5x + 1')}>
+                      📈 Derivative
                     </a>
                   </li>
                   <li>
-                    <a onClick={() => setProblemText('Tính tích phân: ∫(x² + 3x + 2)dx từ 0 đến 2')}>
-                      ∫ Tích phân
+                    <a onClick={() => setProblemText('Solve the system of equations: 2x + 3y = 7; x - y = 1')}>
+                      🔢 System of Equations
+                    </a>
+                  </li>
+                  <li>
+                    <a onClick={() => setProblemText('Calculate the integral: ∫(x² + 3x + 2)dx from 0 to 2')}>
+                      ∫ Integral
                     </a>
                   </li>
                 </ul>
               </div>
               
-              <div className="tooltip" data-tip="Ctrl+Enter để gửi">
+              <div className="tooltip" data-tip="Ctrl+Enter to submit">
                 <kbd className="kbd kbd-xs">Ctrl</kbd>
                 <span className="mx-1">+</span>
                 <kbd className="kbd kbd-xs">Enter</kbd>
@@ -369,9 +371,9 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                 problemText.length > 9500 ? 'text-error' : 
                 problemText.length > 9000 ? 'text-warning' : 'text-info'
               }`}>
-                {problemText.length > 9500 ? '⚠️ Gần đạt giới hạn ký tự' :
-                 problemText.length > 9000 ? '💡 Nên rút gọn nội dung' :
-                 '📝 Nội dung khá dài'}
+                {problemText.length > 9500 ? '⚠️ Approaching character limit' :
+                 problemText.length > 9000 ? '💡 Consider shortening content' :
+                 '📝 Content is quite long'}
               </span>
             </div>
           )}
@@ -380,7 +382,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
       {/* Image Upload Section */}
         <div className="form-control mt-6">
           <label className="label">
-            <span className="label-text text-lg font-medium">Hoặc tải lên hình ảnh</span>
+            <span className="label-text text-lg font-medium">Or upload an image</span>
           </label>
           <div 
             ref={imageDropZoneRef} 
@@ -397,10 +399,10 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           >
             <PhotoIcon className="mx-auto h-16 w-16 text-primary/60 mb-4" />
             <p className="text-lg font-medium mb-2">
-              Kéo thả hoặc nhấp để chọn hình ảnh
+              Drag & drop or click to select an image
             </p>
             <p className="text-sm opacity-60">
-              (Tối đa {MAX_IMAGE_SIZE_MB}MB, định dạng JPG, PNG, WEBP)
+              (Max {MAX_IMAGE_SIZE_MB}MB, JPG, PNG, or WEBP)
             </p>
             <input
               type="file"
@@ -413,7 +415,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
           </div>
           
           <div className="mt-4 text-center">
-            <div className="divider">HOẶC</div>
+            <div className="divider">OR</div>
             <button
               type="button"
               onClick={handlePasteButtonClick}
@@ -421,14 +423,14 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
               className="btn btn-outline btn-sm"
             >
               <ClipboardIcon className="h-4 w-4 mr-2" />
-              Dán từ clipboard (Ctrl+V)
+              Paste from clipboard (Ctrl+V)
             </button>
           </div>
 
           {previewUrl && (
             <div className="mt-6">
               <div className="relative inline-block">
-                <img src={previewUrl} alt="Image preview" className="max-h-64 rounded-lg shadow-lg" />
+                <img src={previewUrl} alt="Image preview" className="max-h-64 rounded-lg shadow-md" />
                 <button
                   type="button"
                   onClick={removeImage}
@@ -455,7 +457,7 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
         {/* Subject Selection */}
         <div className="form-control mt-6">
           <label className="label">
-            <span className="label-text text-lg font-medium">Chọn môn học</span>
+            <span className="label-text text-lg font-medium">Select Subject</span>
           </label>
           <select 
             className="select select-bordered w-full" 
@@ -486,11 +488,11 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
               onChange={() => setIsAdvancedMode(!isAdvancedMode)}
               disabled={isLoading}
             />
-            <span className="label-text text-lg font-medium mr-2">Chế độ nâng cao</span>
-            <AcademicCapIcon className="h-6 w-6 text-primary" title="Chế độ nâng cao chia nhỏ bài toán thành các bước để giải quyết vấn đề phức tạp."/>
+            <span className="label-text text-lg font-medium mr-2">Advanced Mode</span>
+            <AcademicCapIcon className="h-6 w-6 text-primary" title="Advanced mode breaks down the problem into steps to solve complex issues."/>
           </label>
           <div className="label">
-            <span className="label-text-alt opacity-70">Chia nhỏ bài toán thành các bước chi tiết</span>
+            <span className="label-text-alt opacity-70">Breaks down the problem into detailed steps</span>
           </div>
         </div>
 
@@ -505,19 +507,19 @@ export const ProblemInput: React.FC<ProblemInputProps> = ({ onSubmit, isLoading 
                {isLoading ? (
                  <>
                    <span className="loading loading-spinner loading-sm"></span>
-                   Đang xử lý{isAdvancedMode ? " (Nâng cao)..." : "..."}
+                   Processing{isAdvancedMode ? " (Advanced)..." : "..."}
                  </>
                ) : (
                  <>
                    <SparklesIcon className="h-6 w-6 mr-2 group-hover:animate-pulse" />
-                   Giải bài toán {isAdvancedMode && "(Nâng cao)"}
+                   Solve Problem {isAdvancedMode && "(Advanced)"}
                    <kbd className="kbd kbd-xs ml-2 opacity-60">Ctrl+Enter</kbd>
                  </>
                )}
              </button>
              {(!problemText.trim() && !imageBase64) && (
                <div className="text-center mt-2">
-                 <span className="text-xs opacity-60">💡 Nhập mô tả bài toán hoặc tải lên hình ảnh để bắt đầu</span>
+                 <span className="text-xs opacity-60">💡 Enter a problem or upload an image to start</span>
                </div>
              )}
            </div>
