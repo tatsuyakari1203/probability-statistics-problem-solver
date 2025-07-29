@@ -3,17 +3,16 @@ export type ModelChoice = 'gemini-2.5-pro' | 'gemini-2.5-flash' | 'gemini-2.5-fl
 
 export interface SolutionStep {
   explanation: string;
-  verificationCode?: string;
+  code?: string;
 }
 
 export interface GeminiSolutionResponse {
-  problemUnderstanding: {
+  problemAnalysis: {
     restatedProblem: string;
     keyInformation: string[];
     problemGoal: string;
-    imageAcknowledgement: string;
   };
-  solutionSteps: SolutionStep[];
+  solution: SolutionStep[];
   finalAnswer: string;
   detectedSubject?: string;
   subjectConfig?: {
@@ -27,4 +26,5 @@ export interface AdvancedModeProgress {
   totalSteps: number;
   stepDescription: string;
   phase?: 'planning' | 'generating_textual_solution' | 'complete';
+  streamedContent?: string;
 }

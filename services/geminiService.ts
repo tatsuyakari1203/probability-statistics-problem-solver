@@ -3,7 +3,8 @@ import { GoogleGenAI, Part, Tool, Content } from "@google/genai";
 import type {
     GeminiSolutionResponse,
     AdvancedModeProgress,
-    ModelChoice
+    ModelChoice,
+    SolutionStep
 } from '../types';
 import {
     SubjectType,
@@ -61,12 +62,10 @@ export const solveProblemWithGemini = async (
   retries: number = 1
 ): Promise<GeminiSolutionResponse> => {
   try {
-    onProgressUpdate({ currentStep: 1, totalSteps: 3, stepDescription: "Detecting subject...", phase: 'planning' });
+    onProgressUpdate({ currentStep: 1, totalSteps: 2, stepDescription: "Initializing...", phase: 'planning' });
     const detectedSubject = subjectType || detectSubjectFromProblem(problemDescription);
     const subjectConfig = getSubjectConfig(detectedSubject);
 
-    onProgressUpdate({ currentStep: 2, totalSteps: 3, stepDescription: "Generating solution...", phase: 'generating_textual_solution' });
-    
     const mainPrompt = createMainPrompt(problemDescription, imageBase64, subjectConfig, isAdvancedMode);
     
     const contents: Content[] = [];
@@ -81,21 +80,34 @@ export const solveProblemWithGemini = async (
     parts.push({ text: mainPrompt });
     contents.push({ role: "user", parts });
 
-    const result = await ai.models.generateContent({
+    const stream = await ai.models.generateContentStream({
         model: modelChoice,
         contents,
         tools: isAdvancedMode ? [{ codeExecution: {} }] : undefined,
-    });
-    
-    onProgressUpdate({ currentStep: 3, totalSteps: 3, stepDescription: "Parsing response...", phase: 'complete' });
-    
-    const responseText = result.text;
+    } as any);
 
-    if (!responseText) {
+    let accumulatedText = "";
+    onProgressUpdate({ currentStep: 2, totalSteps: 2, stepDescription: "Model is thinking...", phase: 'generating_textual_solution', streamedContent: "..." });
+
+    for await (const chunk of stream) {
+        const chunkText = chunk.text;
+        if (chunkText) {
+            accumulatedText += chunkText;
+            onProgressUpdate({
+                currentStep: 2,
+                totalSteps: 2,
+                stepDescription: "Receiving solution...",
+                phase: 'generating_textual_solution',
+                streamedContent: accumulatedText
+            });
+        }
+    }
+
+    if (!accumulatedText) {
         throw new Error("The AI returned an empty response.");
     }
     
-    const parsedSolution = cleanAndParseJson<GeminiSolutionResponse>(responseText);
+    const parsedSolution = cleanAndParseJson<GeminiSolutionResponse>(accumulatedText);
 
     const finalResponse: GeminiSolutionResponse = {
         ...parsedSolution,
