@@ -16,13 +16,13 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-lg mb-2 text-red-900">
-            Có lỗi xảy ra
+            An Error Occurred
           </h3>
           <div className="text-sm text-red-700 leading-relaxed mb-3">
             {message}
           </div>
           <div className="text-xs text-red-600/80">
-            Vui lòng thử lại hoặc kiểm tra dữ liệu đầu vào.
+            Please try again or check your input data.
           </div>
         </div>
       </div>

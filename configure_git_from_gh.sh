@@ -1,39 +1,39 @@
 #!/bin/bash
 
-# Tự động định cấu hình Git bằng thông tin từ GitHub CLI.
+# Automatically configure Git with information from the GitHub CLI.
 
-echo "Đang cố gắng định cấu hình Git bằng thông tin từ GitHub..."
+echo "Attempting to configure Git with information from GitHub..."
 
-# Lấy tên người dùng
+# Get username
 git_user_name=$(gh api user --jq .name)
 if [ -z "$git_user_name" ] || [ "$git_user_name" == "null" ]; then
-    echo "Lỗi: Không thể lấy tên người dùng từ GitHub."
+    echo "Error: Could not retrieve username from GitHub."
     exit 1
 fi
 
-# Lấy email công khai
+# Get public email
 git_user_email=$(gh api user --jq .email)
 
-# Nếu email là riêng tư/null, hãy tạo địa chỉ email noreply
+# If email is private/null, create a noreply email address
 if [ -z "$git_user_email" ] || [ "$git_user_email" == "null" ]; then
-    echo "Email công khai không được tìm thấy. Đang tạo email noreply của GitHub."
+    echo "Public email not found. Creating a GitHub noreply email."
     user_id=$(gh api user --jq .id)
     user_login=$(gh api user --jq .login)
     
     if [ -z "$user_id" ] || [ "$user_id" == "null" ] || [ -z "$user_login" ] || [ "$user_login" == "null" ]; then
-        echo "Lỗi: Không thể lấy ID người dùng hoặc tên đăng nhập để tạo email noreply."
+        echo "Error: Could not retrieve user ID or login to create a noreply email."
         exit 1
     fi
     
     git_user_email="${user_id}+${user_login}@users.noreply.github.com"
-    echo "Đã tạo email Noreply: $git_user_email"
+    echo "Noreply email created: $git_user_email"
 fi
 
-# Đặt cấu hình Git toàn cục
+# Set global Git config
 git config --global user.name "$git_user_name"
 git config --global user.email "$git_user_email"
 
 echo ""
-echo "Cấu hình Git đã được cập nhật thành công!"
-echo "Đây là cấu hình người dùng hiện tại của bạn:"
+echo "Git configuration updated successfully!"
+echo "Here is your current user configuration:"
 git config --list | grep user

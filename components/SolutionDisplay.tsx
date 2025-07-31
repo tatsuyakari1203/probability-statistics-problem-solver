@@ -37,7 +37,7 @@ const ProblemAnalysisDisplay: React.FC<{ analysis: GeminiSolutionResponse['probl
           <div className="w-6 h-6 bg-blue-100 rounded flex items-center justify-center mr-3">
             <BrainIcon className="h-4 w-4 text-blue-600" />
           </div>
-          Phân tích bài toán
+          Problem Analysis
         </h2>
         <div className="space-y-4">
           <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -64,7 +64,7 @@ const SolutionStepsDisplay: React.FC<{ steps: SolutionStep[] }> = ({ steps }) =>
           <div className="w-6 h-6 bg-green-100 rounded flex items-center justify-center mr-3">
             <CheckCircleIcon className="h-4 w-4 text-green-600" />
           </div>
-          Các bước giải
+          Solution Steps
         </h2>
         <div className="space-y-4">
           {steps.map((step, index) => (
@@ -73,7 +73,7 @@ const SolutionStepsDisplay: React.FC<{ steps: SolutionStep[] }> = ({ steps }) =>
                 <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-semibold mr-3">
                   {index + 1}
                 </div>
-                <span className="text-sm font-medium text-gray-600">Bước {index + 1}</span>
+                <span className="text-sm font-medium text-gray-600">Step {index + 1}</span>
               </div>
               <MarkdownViewer content={step.explanation} />
               <CodeBlock code={step.code} />
@@ -94,7 +94,7 @@ const FinalAnswerDisplay: React.FC<{ answer?: string }> = ({ answer }) => {
           <div className="w-6 h-6 bg-orange-100 rounded flex items-center justify-center mr-3">
             <InformationCircleIcon className="h-4 w-4 text-orange-600" />
           </div>
-          Đáp án cuối cùng
+          Final Answer
         </h3>
         <div className="bg-white border border-gray-200 p-4 rounded-lg">
           <div className="prose max-w-none text-gray-800">

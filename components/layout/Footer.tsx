@@ -10,10 +10,10 @@ export const Footer: React.FC = () => {
             <AcademicCapIcon className="h-4 w-4 text-gray-700" />
           </div>
           <p className="text-gray-600 mb-2">
-            © 2024 AI Problem Solver. Được phát triển với ❤️ cho giáo dục.
+            © 2024 AI Problem Solver. Developed with ❤️ for education.
           </p>
           <p className="text-sm text-gray-500">
-            Giải pháp AI tiên tiến cho giáo dục
+            Advanced AI solutions for education
           </p>
         </div>
       </div>

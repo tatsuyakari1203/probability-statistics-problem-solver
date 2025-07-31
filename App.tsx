@@ -107,7 +107,7 @@ const App: React.FC = () => {
           <React.Suspense fallback={
             <div className="flex justify-center items-center p-8 sm:p-12">
               <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-              <span className="ml-4 text-base sm:text-lg text-gray-600">Đang tải kết quả...</span>
+              <span className="ml-4 text-base sm:text-lg text-gray-600">Loading results...</span>
             </div>
           }>
             <SolutionDisplay solution={solution} />

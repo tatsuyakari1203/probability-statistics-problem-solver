@@ -5,25 +5,25 @@ import rehypeKatex from 'rehype-katex';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-// Định nghĩa props cho component, chỉ cần nhận vào một chuỗi markdown
+// Defines the props for the component, which simply accepts a markdown string.
 interface MarkdownViewerProps {
   content: string;
 }
 
 /**
- * Component này chịu trách nhiệm hiển thị một chuỗi Markdown,
- * bao gồm cả các công thức toán học LaTeX.
- * Nó sử dụng bộ công cụ hiện đại và an toàn:
- * - react-markdown: Để chuyển đổi Markdown thành component React.
- * - remark-math: Để nhận diện cú pháp toán học ($...$ và $$...$$).
- * - rehype-katex: Để hiển thị các công thức toán học đó bằng KaTeX.
+ * This component is responsible for rendering a Markdown string,
+ * including LaTeX mathematical formulas.
+ * It uses a modern and secure toolset:
+ * - react-markdown: To convert Markdown into React components.
+ * - remark-math: To recognize mathematical syntax ($...$ and $$...$$).
+ * - rehype-katex: To render those mathematical formulas using KaTeX.
  */
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
   // Enhanced content validation
   if (!content || typeof content !== 'string') {
     return (
       <div className="text-slate-400 italic">
-        [Nội dung không hợp lệ hoặc trống]
+        [Invalid or empty content]
       </div>
     );
   }
@@ -31,14 +31,14 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
   if (content.trim() === '') {
     return (
       <div className="text-slate-400 italic">
-        [Nội dung trống]
+        [Empty content]
       </div>
     );
   }
 
   return (
     <ReactMarkdown
-      // Các plugin được sử dụng để xử lý nội dung
+      // Plugins used to process the content
       remarkPlugins={[remarkMath]}
       rehypePlugins={[[rehypeKatex, {
         strict: false,
@@ -51,8 +51,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
           "\\CC": "\\mathbb{C}"
         }
       }]]}
-      // Cung cấp các class của Tailwind để tạo kiểu cho nội dung Markdown
-      // Điều này giúp bạn kiểm soát giao diện một cách nhất quán
+      // Provide Tailwind classes to style the Markdown content
+      // This helps maintain a consistent look and feel
       components={{
         h1: ({node, ...props}) => <h1 className="text-2xl font-bold my-4" {...props} />,
         h2: ({node, ...props}) => <h2 className="text-xl font-bold my-3" {...props} />,
@@ -73,7 +73,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
               if (codeContent.length > 50000) {
                 return (
                   <div className="bg-slate-800 p-4 rounded border border-amber-500">
-                    <p className="text-amber-300 mb-2">Mã quá dài để hiển thị (hơn 50,000 ký tự)</p>
+                    <p className="text-amber-300 mb-2">Code too long to display (over 50,000 characters)</p>
                     <pre className="text-slate-300 text-sm overflow-hidden">
                       {codeContent.substring(0, 1000)}...
                     </pre>
@@ -109,7 +109,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({ content }) => {
             console.error('Error rendering code block:', error);
             return (
               <div className="bg-red-900/20 border border-red-500 p-2 rounded">
-                <span className="text-red-300 text-sm">Lỗi hiển thị mã</span>
+                <span className="text-red-300 text-sm">Error displaying code</span>
               </div>
             );
           }

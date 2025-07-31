@@ -8,10 +8,10 @@ export const HeroSection: React.FC = () => {
         <AcademicCapIcon className="h-6 w-6 text-gray-700" />
       </div>
       <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-6">
-        Giải Bài Toán Xác Suất Thống Kê
+        Probability & Statistics Problem Solver
       </h1>
       <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-12">
-        Công cụ AI tiên tiến giúp bạn giải quyết các bài toán xác suất thống kê một cách chi tiết và dễ hiểu
+        An advanced AI tool to help you solve probability and statistics problems with detailed and easy-to-understand solutions.
       </p>
     </div>
   );
