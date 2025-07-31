@@ -12,7 +12,10 @@ module.exports = {
         gray: colors.neutral,
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      animation: {
+        'fade-in': 'fade-in 0.3s ease-out',
       },
     },
   },

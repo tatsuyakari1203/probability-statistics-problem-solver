@@ -93,7 +93,7 @@ const App: React.FC = () => {
       </div>
 
       {isLoading && (
-        <div className="animate-slide-in my-8">
+        <div className="animate-fade-in my-8">
           <LoadingSpinner advancedProgress={advancedModeProgress} />
         </div>
       )}
@@ -106,8 +106,8 @@ const App: React.FC = () => {
         <div className="animate-fade-in my-8">
           <React.Suspense fallback={
             <div className="flex justify-center items-center p-8 sm:p-12">
-              <div className="loading loading-spinner loading-lg text-primary animate-glow"></div>
-              <span className="ml-4 text-base sm:text-lg text-gray-500">Loading results...</span>
+              <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+              <span className="ml-4 text-base sm:text-lg text-gray-600">Đang tải kết quả...</span>
             </div>
           }>
             <SolutionDisplay solution={solution} />

@@ -11,40 +11,28 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ advancedProgress
   const hasStreamedContent = advancedProgress && advancedProgress.streamedContent;
 
   return (
-    <div className="rounded-lg p-8 w-full flex flex-col items-center justify-center animate-pulse-bg border border-gray-200">
-      <div className="w-16 h-16 mb-6">
-        <svg className="w-full h-full" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
-          <g fill="none" fillRule="evenodd">
-            <g transform="translate(1 1)" strokeWidth="2">
-              <circle strokeOpacity=".3" cx="18" cy="18" r="18" />
-              <path d="M36 18c0-9.94-8.06-18-18-18">
-                <animateTransform
-                  attributeName="transform"
-                  type="rotate"
-                  from="0 18 18"
-                  to="360 18 18"
-                  dur="1s"
-                  repeatCount="indefinite"
-                />
-              </path>
-            </g>
-          </g>
-        </svg>
+    <div className="border border-gray-200 rounded-lg p-8 w-full flex flex-col items-center justify-center bg-gray-50">
+      <div className="w-16 h-16 mb-6 relative">
+        <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
       </div>
 
-      <h3 className="text-2xl font-bold text-gray-800 mb-2">
-        {advancedProgress ? 'Processing in Advanced Mode...' : 'Analyzing your problem...'}
+      <h3 className="text-lg font-medium text-gray-800 mb-2 text-center">
+        {advancedProgress ? 'Đang xử lý ở chế độ nâng cao...' : 'Đang phân tích bài toán của bạn...'}
       </h3>
-      <p className="text-gray-600 mb-6">
-        This may take a few moments
+      <p className="text-gray-600 mb-6 text-center">
+        Vui lòng đợi trong giây lát
       </p>
 
       {hasStreamedContent && (
-        <div className="w-full max-w-2xl mt-4 text-left">
-          <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50 shadow-inner">
-            <span className="font-semibold text-sm text-slate-300">Model's Reasoning Stream:</span>
-            <div className="mt-2 bg-slate-900/70 rounded p-3 max-h-48 overflow-y-auto">
-              <pre className="whitespace-pre-wrap font-mono text-xs text-slate-200">{advancedProgress.streamedContent}</pre>
+        <div className="w-full max-w-3xl mt-6 text-left">
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-5">
+            <div className="flex items-center mb-3">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+              <span className="font-medium text-sm text-gray-300">Quá trình suy luận của AI:</span>
+            </div>
+            <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 max-h-48 overflow-y-auto">
+              <pre className="whitespace-pre-wrap font-mono text-xs text-gray-200">{advancedProgress.streamedContent}</pre>
             </div>
           </div>
         </div>

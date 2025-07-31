@@ -1,53 +1,51 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Layout improvements with modern spacing */
-/* (Containers removed for a seamless, paper-like design) */
-
-/* Custom styles for math rendering */
+/* KaTeX styling */
 .katex {
-  font-size: 1.1em !important;
+  color: #374151;
 }
 
-/* Basic Animation Classes */
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Simple fade animation for content loading */
 @keyframes fade-in {
-  from { 
+  from {
     opacity: 0;
   }
-  to { 
+  to {
     opacity: 1;
   }
 }
 
-@keyframes slide-in {
-  from { 
-    transform: translateY(20px); 
-    opacity: 0; 
-  }
-  to { 
-    transform: translateY(0); 
-    opacity: 1; 
-  }
+.fade-in {
+  animation: fade-in 0.3s ease-out;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+/* Custom scrollbar - minimal */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-.animate-slide-in {
-  animation: slide-in 0.5s ease-out;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-@keyframes pulse-bg {
-  0%, 100% {
-    background-color: rgba(239, 246, 255, 0.7); /* Tailwind's blue-50 with opacity */
-  }
-  50% {
-    background-color: rgba(219, 234, 254, 0.7); /* Tailwind's blue-100 with opacity */
-  }
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 3px;
 }
 
-.animate-pulse-bg {
-  animation: pulse-bg 2s infinite;
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
 }
 
-/* Custom override for mockup-code padding */
+/* Focus styles */
+.focus-ring:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}

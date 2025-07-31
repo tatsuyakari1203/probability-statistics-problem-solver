@@ -35,6 +35,15 @@ ${documentContextNote}
 ${isAdvancedMode ? advancedModeInstructions : standardModeInstructions}
 3.  **Final Answer:** In the \`finalAnswer\` section, provide the final, conclusive answer.
 
+**CRITICAL JSON FORMATTING RULES:**
+- Output ONLY a single, valid JSON object
+- Use SINGLE backslashes in LaTeX math expressions (e.g., "$\mu$" not "$\\mu$")
+- Never use double backslashes (\\) in JSON strings - they cause parsing errors
+- Escape quotes properly with single backslashes
+- Do NOT include any text before or after the JSON
+- Ensure all strings are properly quoted
+- Test your JSON mentally before outputting to ensure it's valid
+
 **Output a SINGLE, VALID JSON object with this exact structure:**
 {
   "problemAnalysis": {
@@ -51,7 +60,32 @@ ${isAdvancedMode ? advancedModeInstructions : standardModeInstructions}
   "finalAnswer": "..."
 }
 
-Format all textual content using GitHub Flavored Markdown. Use LaTeX for math.
+**LaTeX Math Examples in JSON:**
+- Correct: "The mean $\mu = 175$ cm"
+- Incorrect: "The mean $\\mu = 175$ cm"
+- Correct: "Standard deviation $\sigma = 7$"
+- Incorrect: "Standard deviation $\\sigma = 7$"
+- Correct: "We have $P(X > 185) = 1 - \Phi(z)$"
+- Incorrect: "We have $P(X > 185) = 1 - \\Phi(z)$"
+
+**Example of properly formatted JSON response:**
+\`\`\`json
+{
+  \"problemAnalysis\": {
+    \"restatedProblem\": \"Calculate probability for normal distribution with $\\mu = 175$ and $\\sigma = 7$\",
+    \"keyInformation\": [\"Normal distribution\", \"Mean $\\mu = 175$ cm\"],
+    \"problemGoal\": \"Find $P(X > 185)$\"
+  },
+  \"solution\": [
+    {
+      \"explanation\": \"Convert to standard normal: $Z = \\frac{X - \\mu}{\\sigma}$\"
+    }
+  ],
+  \"finalAnswer\": \"The probability is approximately 7.64%\"
+}
+\`\`\`
+
+Format all textual content using GitHub Flavored Markdown. Use LaTeX for math with SINGLE backslashes only.
 `;
 };
 

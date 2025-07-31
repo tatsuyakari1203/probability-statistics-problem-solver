@@ -26,29 +26,58 @@ const ai = new GoogleGenAI({ apiKey: getApiKey() });
 const cleanAndParseJson = <T>(jsonStr: string): T => {
   let cleanedJsonStr = jsonStr.trim();
   
+  // Remove code fences if present
   const fenceRegex = /^```(?:json)?\s*\n?(.*?)\n?\s*```$/s;
   const match = cleanedJsonStr.match(fenceRegex);
   if (match && match[1]) {
     cleanedJsonStr = match[1].trim();
   }
   
+  // Extract JSON object
   const firstBracket = cleanedJsonStr.indexOf('{');
   const lastBracket = cleanedJsonStr.lastIndexOf('}');
   if (firstBracket !== -1 && lastBracket > firstBracket) {
     cleanedJsonStr = cleanedJsonStr.substring(firstBracket, lastBracket + 1);
   }
   
+  // Remove trailing commas
   cleanedJsonStr = cleanedJsonStr.replace(/,\s*([}\]])/g, '$1');
+  
+  // Fix common LaTeX escape issues in JSON strings
+  // Replace triple backslashes with single backslashes for LaTeX
+  cleanedJsonStr = cleanedJsonStr.replace(/\\\\([a-zA-Z])/g, '\\$1');
+  // Replace double backslashes with single backslashes for LaTeX in JSON strings
+  cleanedJsonStr = cleanedJsonStr.replace(/\\([a-zA-Z])/g, '\$1');
+  
+  // Fix problematic escape sequences that can cause JSON parsing errors
+  // Handle invalid escape sequences in JSON strings
+  cleanedJsonStr = cleanedJsonStr.replace(/\\'/g, "'");
+  cleanedJsonStr = cleanedJsonStr.replace(/\\n/g, '\n');
+  cleanedJsonStr = cleanedJsonStr.replace(/\\t/g, '\t');
+  cleanedJsonStr = cleanedJsonStr.replace(/\\r/g, '\r');
+  // Fix any remaining problematic backslash sequences
+  cleanedJsonStr = cleanedJsonStr.replace(/\\([^"\\/bfnrtu])/g, '$1');
   
   try {
     return JSON.parse(cleanedJsonStr) as T;
   } catch (e) {
     console.error("Could not parse JSON response from Gemini:", e, "\nProcessed response:", cleanedJsonStr);
-    let errorMessage = "Could not parse response from AI. Invalid JSON format.";
-    if (e instanceof Error && e.message) {
-      errorMessage += ` Error details: ${e.message}`;
+    
+    // Try one more time with more aggressive LaTeX fixing
+    try {
+      let fixedJsonStr = cleanedJsonStr;
+      // More aggressive LaTeX symbol fixing
+      fixedJsonStr = fixedJsonStr.replace(/\\\\(mu|sigma|alpha|beta|gamma|delta|epsilon|theta|lambda|pi|rho|tau|phi|chi|psi|omega)/g, '\\$1');
+      fixedJsonStr = fixedJsonStr.replace(/\\\\([a-zA-Z]+)/g, '\\$1');
+      
+      return JSON.parse(fixedJsonStr) as T;
+    } catch (secondError) {
+      let errorMessage = "Could not parse response from AI. Invalid JSON format.";
+      if (e instanceof Error && e.message) {
+        errorMessage += ` Error details: ${e.message}`;
+      }
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
   }
 };
 

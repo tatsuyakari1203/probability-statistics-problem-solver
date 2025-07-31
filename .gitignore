@@ -162,3 +162,10 @@ jest_coverage/
 .temp/
 .tmp/
 plan.md
+.crush/crush.db
+.gitignore
+.gitignore
+.crush/crush.db-wal
+.gitignore
+.crush/init
+.crush/crush.db-shm
