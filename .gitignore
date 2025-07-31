@@ -169,3 +169,4 @@ plan.md
 .gitignore
 .crush/init
 .crush/crush.db-shm
+configure_git.sh
